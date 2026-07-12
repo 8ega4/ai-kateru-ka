@@ -608,14 +608,14 @@ function play(h){
 
   if(mv.predicted!==null&&wasPredicted){
     lockOn(hy);
-    lookAt(-1,.25);
+    lookAt(1,.25);
     eye.classList.add('hit');
     setTimeout(function(){eye.classList.remove('hit');},700);
   }else if(mv.predicted!==null){
-    lookAt(.7,-.5);
+    lookAt(-.7,-.5);
     blink();setTimeout(blink,240);
   }else{
-    lookAt(-1,.25);
+    lookAt(1,.25);
   }
 
   var co=$('callout');
