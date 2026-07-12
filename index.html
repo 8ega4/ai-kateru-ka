@@ -114,8 +114,9 @@ h1 .q{color:var(--ai)}
 .meter-fill{
   height:100%;width:0%;border-radius:99px;
   background:linear-gradient(90deg,#6E81F0,var(--ai));
-  transition:width .5s ease;
+  transition:width .5s ease,background .3s ease;
 }
+.meter-fill.serious{background:linear-gradient(90deg,#FF9142,#E0311F);}
 
 /* ---- controls ---- */
 .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -201,7 +202,7 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="verdict" id="verdict" role="status"></div>
     <div class="callout" id="callout">好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。</div>
     <div class="meter-wrap">
-      <div class="meter-label"><span>AIの読心レベル</span><span class="pct" id="confPct">0%</span></div>
+      <div class="meter-label"><span id="meterLabel">AIの読心レベル</span><span class="pct" id="confPct">0%</span></div>
       <div class="meter" aria-hidden="true"><div class="meter-fill" id="confBar"></div></div>
     </div>
   </div>
@@ -312,6 +313,7 @@ function reset(){
   $('verdict').textContent='';$('verdict').className='verdict';
   $('callout').innerHTML='好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。';
   $('confBar').style.width='0%';$('confPct').textContent='0%';
+  $('confBar').classList.remove('serious');$('meterLabel').textContent='AIの読心レベル';
   $('overlay').classList.remove('show');
   btns.forEach(function(b){b.disabled=false;});
 }
@@ -349,8 +351,17 @@ function play(h){
 
   // 読心レベル = 予測的中率(直近の自信も加味)
   var readPct=predTotal>0?Math.round(predHit/predTotal*100):0;
-  $('confBar').style.width=readPct+'%';
+  var confBar=$('confBar');
+  confBar.style.width=readPct+'%';
   $('confPct').textContent=readPct+'%';
+  var meterLabel=$('meterLabel');
+  if(round>=15){
+    confBar.classList.add('serious');
+    meterLabel.textContent='AIの読心レベル(本気)';
+  }else{
+    confBar.classList.remove('serious');
+    meterLabel.textContent='AIの読心レベル';
+  }
 
   if(round>=TOTAL){setTimeout(finish,900);return;}
   round++;
@@ -359,6 +370,8 @@ function play(h){
     pending=aiMove(brain);
     btns.forEach(function(b){b.disabled=false;});
     busy=false;
+    if(round===18)$('callout').innerHTML='<span class="read">AI「勝負どころです」</span>';
+    else if(round===20)$('callout').innerHTML='<span class="read">AI「最後の一手、見せてもらいます」</span>';
   },650);
 }
 
