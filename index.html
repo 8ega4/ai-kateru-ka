@@ -160,6 +160,8 @@ h1 .q{color:var(--ai)}
 .result .stats b{display:block;font-family:var(--disp);font-size:20px;font-weight:400;color:var(--ink);margin-top:2px}
 .result .stats .readpct b{color:var(--ai)}
 .result .comment{font-size:13px;line-height:1.7}
+.result .best{font-family:var(--disp);font-size:13px;color:var(--you)}
+.result .best-line{font-size:11px;color:var(--draw)}
 .btn{
   font-family:var(--body);font-weight:700;font-size:15px;
   border-radius:14px;padding:14px;cursor:pointer;border:none;
@@ -222,6 +224,8 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
       <div class="readpct">読まれ度<b id="rRead"></b></div>
     </div>
     <div class="comment" id="rComment"></div>
+    <div class="best" id="rBestNew" hidden>🎉 自己ベスト更新!</div>
+    <div class="best-line" id="rBest"></div>
     <button class="btn share" id="btnShare">結果をXでシェア</button>
     <button class="btn retry" id="btnRetry">もう一回挑む</button>
   </div>
@@ -236,6 +240,19 @@ var BEATS={g:'c',c:'p',p:'g'};
 var EMOJI={g:'✊',c:'✌️',p:'🖐'};
 var NAME={g:'グー',c:'チョキ',p:'パー'};
 var TOTAL=20;
+var BEST_KEY='aikateru_best';
+
+function loadBest(){
+  try{
+    var raw=localStorage.getItem(BEST_KEY);
+    if(!raw)return{bestWins:0,bestReadPct:null,plays:0};
+    var d=JSON.parse(raw);
+    return{bestWins:d.bestWins||0,bestReadPct:(typeof d.bestReadPct==='number'?d.bestReadPct:null),plays:d.plays||0};
+  }catch(e){return{bestWins:0,bestReadPct:null,plays:0};}
+}
+function saveBest(d){
+  try{localStorage.setItem(BEST_KEY,JSON.stringify(d));}catch(e){}
+}
 
 function makeBrain(){
   return {hist:[],res:[],preds:{
@@ -368,6 +385,17 @@ function finish(){
   $('rScore').textContent=you+'勝'+ai+'敗'+draw+'分';
   $('rRead').textContent=readPct+'%';
   $('rComment').textContent=t[2];
+
+  var best=loadBest();
+  var isNewBest=false;
+  if(you>best.bestWins){best.bestWins=you;isNewBest=true;}
+  if(best.bestReadPct===null||readPct<best.bestReadPct){best.bestReadPct=readPct;isNewBest=true;}
+  best.plays=best.plays+1;
+  saveBest(best);
+
+  $('rBestNew').hidden=!isNewBest;
+  $('rBest').textContent='自己ベスト: '+best.bestWins+'勝 / 読まれ度'+best.bestReadPct+'%';
+
   $('overlay').classList.add('show');
 
   $('btnShare').onclick=function(){
