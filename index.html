@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AIに勝てるか? じゃんけん読心バトル</title>
+<meta name="description" content="AIがあなたの出す手を予測して先回りする。20戦して勝ち越せたら本物。ログイン不要・完全無料。">
+<meta property="og:title" content="AIに勝てるか? じゃんけん読心バトル">
+<meta property="og:description" content="AIがあなたの癖を学習して手を読んでくる。20戦で勝ち越せるか?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEFF3;
+  --ink:#14171F;
+  --card:#FFFFFF;
+  --line:#D5DAE2;
+  --you:#FF6B1A;
+  --you-soft:#FFF0E5;
+  --ai:#1F3BE0;
+  --ai-soft:#E8EBFD;
+  --draw:#7A828F;
+  --disp:'DotGothic16',monospace;
+  --body:'Zen Kaku Gothic New',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  color:var(--ink);
+  display:flex;
+  justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.app{
+  width:100%;
+  max-width:440px;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+  gap:12px;
+}
+
+/* ---- header ---- */
+header{display:flex;justify-content:space-between;align-items:baseline}
+h1{font-family:var(--disp);font-size:17px;font-weight:400;letter-spacing:.04em}
+h1 .q{color:var(--ai)}
+.round{font-family:var(--disp);font-size:14px;color:var(--draw)}
+.round b{color:var(--ink);font-size:18px;font-weight:400}
+
+/* ---- scoreboard ---- */
+.score{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:10px 16px;
+}
+.side{display:flex;flex-direction:column;gap:2px}
+.side.ai{align-items:flex-end}
+.side .tag{font-family:var(--disp);font-size:11px;letter-spacing:.12em}
+.side.you .tag{color:var(--you)}
+.side.ai .tag{color:var(--ai)}
+.side .num{font-family:var(--disp);font-size:34px;line-height:1}
+.draws{font-family:var(--disp);font-size:11px;color:var(--draw);text-align:center;padding:0 12px}
+.draws b{display:block;font-size:16px;font-weight:400;color:var(--ink)}
+
+/* ---- stage ---- */
+.stage{
+  flex:1;
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:18px 14px;position:relative;overflow:hidden;min-height:230px;
+}
+.hands{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%}
+.hand{font-size:64px;text-align:center;line-height:1.2;filter:grayscale(0);transition:transform .18s ease}
+.hand.ai-hand{transform:scaleX(-1)}
+.hand.pop{animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.hand.ai-hand.pop{animation:popflip .3s ease}
+@keyframes popflip{0%{transform:scaleX(-1) scale(.4)}70%{transform:scaleX(-1) scale(1.15)}100%{transform:scaleX(-1) scale(1)}}
+.vs{font-family:var(--disp);font-size:15px;color:var(--draw);padding:0 6px}
+.verdict{
+  font-family:var(--disp);font-size:24px;letter-spacing:.08em;height:32px;
+  display:flex;align-items:center;
+}
+.verdict.win{color:var(--you)}
+.verdict.lose{color:var(--ai)}
+.verdict.draw{color:var(--draw)}
+.callout{
+  font-size:12.5px;color:var(--draw);min-height:36px;text-align:center;line-height:1.5;
+  padding:0 8px;
+}
+.callout .read{color:var(--ai);font-weight:700}
+
+/* ---- 読心メーター(シグネチャー) ---- */
+.meter-wrap{width:100%;max-width:300px;display:flex;flex-direction:column;gap:5px}
+.meter-label{
+  display:flex;justify-content:space-between;
+  font-family:var(--disp);font-size:11px;color:var(--draw);letter-spacing:.08em;
+}
+.meter-label .pct{color:var(--ai)}
+.meter{
+  height:10px;border-radius:99px;background:var(--ai-soft);
+  border:1px solid var(--line);overflow:hidden;
+}
+.meter-fill{
+  height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,#6E81F0,var(--ai));
+  transition:width .5s ease;
+}
+
+/* ---- controls ---- */
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hbtn{
+  font-family:var(--body);
+  background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:14px 0 10px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:transform .1s ease,border-color .15s,background .15s;
+  touch-action:manipulation;
+}
+.hbtn .e{font-size:36px;line-height:1.1}
+.hbtn .n{font-size:12px;font-weight:700;color:var(--draw)}
+.hbtn:active{transform:scale(.94);border-color:var(--you);background:var(--you-soft)}
+.hbtn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
+.hbtn:disabled{opacity:.45;pointer-events:none}
+
+/* ---- result overlay ---- */
+.overlay{
+  position:fixed;inset:0;background:rgba(20,23,31,.55);
+  display:none;align-items:center;justify-content:center;padding:20px;z-index:10;
+}
+.overlay.show{display:flex}
+.result{
+  width:100%;max-width:380px;background:var(--card);border-radius:20px;
+  padding:26px 22px;display:flex;flex-direction:column;gap:14px;text-align:center;
+  animation:rise .35s ease;
+}
+@keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.result .headline{font-family:var(--disp);font-size:22px;line-height:1.4}
+.result .headline.win{color:var(--you)}
+.result .headline.lose{color:var(--ai)}
+.result .title-badge{
+  align-self:center;font-family:var(--disp);font-size:14px;
+  border:1.5px solid var(--ink);border-radius:99px;padding:6px 18px;
+}
+.result .stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  font-size:12.5px;color:var(--draw);
+}
+.result .stats div{background:var(--bg);border-radius:10px;padding:10px 6px}
+.result .stats b{display:block;font-family:var(--disp);font-size:20px;font-weight:400;color:var(--ink);margin-top:2px}
+.result .stats .readpct b{color:var(--ai)}
+.result .comment{font-size:13px;line-height:1.7}
+.btn{
+  font-family:var(--body);font-weight:700;font-size:15px;
+  border-radius:14px;padding:14px;cursor:pointer;border:none;
+  touch-action:manipulation;
+}
+.btn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
+.btn.share{background:var(--ink);color:#fff}
+.btn.retry{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
+.btn:active{transform:scale(.97)}
+
+footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>AIに勝てるか<span class="q">?</span></h1>
+    <div class="round">ROUND <b id="round">1</b>/20</div>
+  </header>
+
+  <div class="score" aria-label="スコア">
+    <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
+    <div class="draws">DRAW<b id="sDraw">0</b></div>
+    <div class="side ai"><span class="tag">AI</span><span class="num" id="sAi">0</span></div>
+  </div>
+
+  <div class="stage">
+    <div class="hands">
+      <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
+      <div class="vs">VS</div>
+      <div class="hand ai-hand" id="hAi" aria-label="AIの手">❔</div>
+    </div>
+    <div class="verdict" id="verdict" role="status"></div>
+    <div class="callout" id="callout">好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。</div>
+    <div class="meter-wrap">
+      <div class="meter-label"><span>AIの読心レベル</span><span class="pct" id="confPct">0%</span></div>
+      <div class="meter" aria-hidden="true"><div class="meter-fill" id="confBar"></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="hbtn" data-hand="g"><span class="e">✊</span><span class="n">グー</span></button>
+    <button class="hbtn" data-hand="c"><span class="e">✌️</span><span class="n">チョキ</span></button>
+    <button class="hbtn" data-hand="p"><span class="e">🖐</span><span class="n">パー</span></button>
+  </div>
+
+  <footer>AIは通信せずこの画面の中だけで学習します。ログイン不要。</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="result" role="dialog" aria-label="結果">
+    <div class="headline" id="rHead"></div>
+    <div class="title-badge" id="rTitle"></div>
+    <div class="stats">
+      <div>戦績<b id="rScore"></b></div>
+      <div class="readpct">読まれ度<b id="rRead"></b></div>
+    </div>
+    <div class="comment" id="rComment"></div>
+    <button class="btn share" id="btnShare">結果をXでシェア</button>
+    <button class="btn retry" id="btnRetry">もう一回挑む</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var HANDS=['g','c','p'];
+var COUNTER={g:'p',c:'g',p:'c'};
+var BEATS={g:'c',c:'p',p:'g'};
+var EMOJI={g:'✊',c:'✌️',p:'🖐'};
+var NAME={g:'グー',c:'チョキ',p:'パー'};
+var TOTAL=20;
+
+function makeBrain(){
+  return {hist:[],res:[],preds:{
+    freq:{score:0,last:null},
+    markov1:{score:0,last:null},
+    markov2:{score:0,last:null},
+    wsls:{score:0,last:null}
+  }};
+}
+function argmax(c){return HANDS.reduce(function(a,x){return c[x]>c[a]?x:a;},'g');}
+function predictAll(b){
+  var h=b.hist,n=h.length,out={},c,i,seen;
+  if(n>=1){c={g:0,c:0,p:0};for(i=0;i<n;i++)c[h[i]]++;out.freq=argmax(c);}else out.freq=null;
+  if(n>=2){c={g:0,c:0,p:0};seen=false;for(i=0;i<n-1;i++)if(h[i]===h[n-1]){c[h[i+1]]++;seen=true;}out.markov1=seen?argmax(c):null;}else out.markov1=null;
+  if(n>=3){c={g:0,c:0,p:0};seen=false;for(i=0;i<n-2;i++)if(h[i]===h[n-2]&&h[i+1]===h[n-1]){c[h[i+2]]++;seen=true;}out.markov2=seen?argmax(c):null;}else out.markov2=null;
+  if(n>=1&&b.res.length>=1){
+    var lastH=h[n-1],lastR=b.res[b.res.length-1];
+    out.wsls=(lastR==='w'||lastR==='d')?lastH:COUNTER[lastH];
+  }else out.wsls=null;
+  return out;
+}
+function aiMove(b){
+  var preds=predictAll(b),bestKey=null,bestScore=-1,k;
+  for(k in b.preds){
+    b.preds[k].last=preds[k];
+    if(preds[k]!==null&&b.preds[k].score>bestScore){bestScore=b.preds[k].score;bestKey=k;}
+  }
+  var conf=Math.max(0,Math.min(1,bestScore));
+  if(bestKey===null||bestScore<=0.15){
+    return {move:HANDS[Math.floor(Math.random()*3)],conf:conf,predicted:null};
+  }
+  return {move:COUNTER[preds[bestKey]],conf:conf,predicted:preds[bestKey]};
+}
+function learn(b,humanMove,aiPlayed){
+  var k,p;
+  for(k in b.preds){
+    p=b.preds[k];
+    if(p.last!==null)p.score=p.score*0.8+(p.last===humanMove?0.2:0);
+    else p.score*=0.9;
+  }
+  var r=humanMove===aiPlayed?'d':(BEATS[humanMove]===aiPlayed?'w':'l');
+  b.hist.push(humanMove);b.res.push(r);
+  return r;
+}
+
+// ---- game state ----
+var brain,round,you,ai,draw,predHit,predTotal,pending,busy;
+var $=function(id){return document.getElementById(id);};
+var btns=document.querySelectorAll('.hbtn');
+
+function reset(){
+  brain=makeBrain();round=1;you=0;ai=0;draw=0;predHit=0;predTotal=0;busy=false;
+  pending=aiMove(brain);
+  $('round').textContent=round;
+  $('sYou').textContent=0;$('sAi').textContent=0;$('sDraw').textContent=0;
+  $('hYou').textContent='❔';$('hAi').textContent='❔';
+  $('verdict').textContent='';$('verdict').className='verdict';
+  $('callout').innerHTML='好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。';
+  $('confBar').style.width='0%';$('confPct').textContent='0%';
+  $('overlay').classList.remove('show');
+  btns.forEach(function(b){b.disabled=false;});
+}
+
+function play(h){
+  if(busy)return;busy=true;
+  btns.forEach(function(b){b.disabled=true;});
+  var mv=pending;
+  var wasPredicted=(mv.predicted===h);
+  if(mv.predicted!==null){predTotal++;if(wasPredicted)predHit++;}
+  var r=learn(brain,h,mv.move);
+
+  var hy=$('hYou'),ha=$('hAi');
+  hy.textContent=EMOJI[h];ha.textContent=EMOJI[mv.move];
+  hy.classList.remove('pop');ha.classList.remove('pop');
+  void hy.offsetWidth;
+  hy.classList.add('pop');ha.classList.add('pop');
+
+  var v=$('verdict');
+  if(r==='w'){you++;v.textContent='WIN!';v.className='verdict win';}
+  else if(r==='l'){ai++;v.textContent='LOSE…';v.className='verdict lose';}
+  else{draw++;v.textContent='DRAW';v.className='verdict draw';}
+  $('sYou').textContent=you;$('sAi').textContent=ai;$('sDraw').textContent=draw;
+
+  var co=$('callout');
+  if(mv.predicted!==null&&wasPredicted&&r==='l'){
+    co.innerHTML='<span class="read">AI「'+NAME[h]+'を出すと読んでいました」</span>';
+  }else if(mv.predicted!==null&&wasPredicted){
+    co.innerHTML='<span class="read">AIはあなたの'+NAME[h]+'を予測していました。</span>(あいこで逃げ切り)';
+  }else if(mv.predicted!==null){
+    co.textContent='AIの予測は'+NAME[mv.predicted]+'。読みが外れました。';
+  }else{
+    co.textContent='AI「まだデータが足りない…」';
+  }
+
+  // 読心レベル = 予測的中率(直近の自信も加味)
+  var readPct=predTotal>0?Math.round(predHit/predTotal*100):0;
+  $('confBar').style.width=readPct+'%';
+  $('confPct').textContent=readPct+'%';
+
+  if(round>=TOTAL){setTimeout(finish,900);return;}
+  round++;
+  setTimeout(function(){
+    $('round').textContent=round;
+    pending=aiMove(brain);
+    btns.forEach(function(b){b.disabled=false;});
+    busy=false;
+  },650);
+}
+
+function titleFor(readPct){
+  if(you>ai){
+    if(readPct<=30)return['🏆 あなたの勝ち!','称号: 予測不能人間','AIの読みをほぼ完全に振り切りました。あなたの手は乱数より読みにくい。本当に人間ですか?'];
+    return['🏆 あなたの勝ち!','称号: AIキラー','読まれながらも勝ち切るという離れ業。勝負勘の勝利です。'];
+  }
+  if(you===ai){
+    return['🤝 引き分け','称号: 互角の人類代表','AIと互角。ここから先は、あなたの癖との戦いです。'];
+  }
+  if(readPct>=70)return['🧠 AIの勝ち','称号: 完全に読まれし者','あなたの手の内は'+readPct+'%お見通しでした。人間の「ランダム」は、ランダムではないのです。'];
+  if(readPct>=45)return['🧠 AIの勝ち','称号: 癖が出てますよ','中盤からパターンを掴まれました。「負けたら手を変える」…それ、読まれてます。'];
+  return['🧠 AIの勝ち','称号: 惜しい人類','読み合いはほぼ互角。運が向けば次は勝てるかもしれません。'];
+}
+
+function finish(){
+  var readPct=predTotal>0?Math.round(predHit/predTotal*100):0;
+  var t=titleFor(readPct);
+  var head=$('rHead');
+  head.textContent=t[0];
+  head.className='headline '+(you>ai?'win':you<ai?'lose':'');
+  $('rTitle').textContent=t[1];
+  $('rScore').textContent=you+'勝'+ai+'敗'+draw+'分';
+  $('rRead').textContent=readPct+'%';
+  $('rComment').textContent=t[2];
+  $('overlay').classList.add('show');
+
+  $('btnShare').onclick=function(){
+    var text='【AIに勝てるか? じゃんけん読心バトル】\n'+t[0]+' '+you+'勝'+ai+'敗'+draw+'分\n'+t[1]+'(読まれ度'+readPct+'%)\n#AIに勝てるか\n';
+    var url=location.href.split('#')[0];
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank');
+  };
+}
+
+btns.forEach(function(b){
+  b.addEventListener('click',function(){play(b.dataset.hand);});
+});
+$('btnRetry').addEventListener('click',reset);
+
+reset();
+})();
+</script>
+</body>
+</html>
