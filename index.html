@@ -100,6 +100,59 @@ h1 .q{color:var(--ai)}
 }
 .callout .read{color:var(--ai);font-weight:700}
 
+/* ---- 単眼アバター ---- */
+.ai-eye{width:76px;height:46px;position:relative;flex:0 0 auto}
+.eye-shell{
+  position:absolute;inset:0;background:#fff;
+  border:2px solid var(--ink);border-radius:50%;
+  overflow:hidden;transition:box-shadow .2s ease;
+}
+.iris{
+  position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#6E81F0,var(--ai) 70%);
+  transition:transform .25s ease,background .3s ease;
+}
+.pupil{
+  position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;
+  border-radius:50%;background:var(--ink);
+  transition:transform .2s ease;
+}
+.glint{
+  position:absolute;left:4px;top:4px;width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+}
+.eye-lid{
+  position:absolute;inset:-2px;background:var(--card);
+  border-bottom:2px solid var(--ink);
+  transform:translateY(-100%);transition:transform .1s ease;
+}
+.ai-eye.serious .eye-lid{transform:translateY(-62%)}
+.ai-eye.blink .eye-lid{transform:translateY(0)}
+.ai-eye.serious .iris{background:radial-gradient(circle at 35% 35%,#FF9142,#E0311F 70%)}
+.ai-eye.hit .pupil{transform:scale(.5)}
+.ai-eye.hit .eye-shell{box-shadow:0 0 0 3px var(--ai-soft),0 0 14px rgba(31,59,224,.55)}
+.ai-eye.serious.hit .eye-shell{box-shadow:0 0 0 3px #FDE8E5,0 0 14px rgba(224,49,31,.55)}
+
+/* ---- 照準(ロックオン) ---- */
+.reticle{
+  position:absolute;left:0;top:0;width:96px;height:96px;margin:-48px 0 0 -48px;
+  pointer-events:none;opacity:0;z-index:2;color:var(--ai);
+}
+.reticle.serious{color:#E0311F}
+.reticle svg{width:100%;height:100%;display:block}
+.reticle .lock-label{
+  position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);
+  font-family:var(--disp);font-size:9px;letter-spacing:.18em;white-space:nowrap;
+}
+.reticle.show{animation:lockon .95s ease forwards}
+@keyframes lockon{
+  0%{opacity:0;transform:scale(2.2) rotate(-90deg)}
+  35%{opacity:1;transform:scale(1) rotate(0deg)}
+  78%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.08)}
+}
+
 /* ---- 読心メーター(シグネチャー) ---- */
 .meter-wrap{width:100%;max-width:300px;display:flex;flex-direction:column;gap:5px}
 .meter-label{
@@ -194,6 +247,12 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
   </div>
 
   <div class="stage">
+    <div class="ai-eye" id="aiEye" aria-hidden="true">
+      <div class="eye-shell">
+        <div class="iris" id="iris"><div class="pupil"></div><div class="glint"></div></div>
+        <div class="eye-lid"></div>
+      </div>
+    </div>
     <div class="hands">
       <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
       <div class="vs">VS</div>
@@ -204,6 +263,18 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="meter-wrap">
       <div class="meter-label"><span id="meterLabel">AIの読心レベル</span><span class="pct" id="confPct">0%</span></div>
       <div class="meter" aria-hidden="true"><div class="meter-fill" id="confBar"></div></div>
+    </div>
+    <div class="reticle" id="reticle" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" stroke-dasharray="10 6"/>
+        <circle cx="50" cy="50" r="26" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="50" y1="2" x2="50" y2="18" stroke="currentColor" stroke-width="2"/>
+        <line x1="50" y1="82" x2="50" y2="98" stroke="currentColor" stroke-width="2"/>
+        <line x1="2" y1="50" x2="18" y2="50" stroke="currentColor" stroke-width="2"/>
+        <line x1="82" y1="50" x2="98" y2="50" stroke="currentColor" stroke-width="2"/>
+        <circle cx="50" cy="50" r="3" fill="currentColor"/>
+      </svg>
+      <span class="lock-label">LOCK ON</span>
     </div>
   </div>
 
@@ -304,6 +375,37 @@ var brain,round,you,ai,draw,predHit,predTotal,pending,busy;
 var $=function(id){return document.getElementById(id);};
 var btns=document.querySelectorAll('.hbtn');
 
+// ---- 単眼アバター & 照準 ----
+var eye=$('aiEye'),iris=$('iris'),reticle=$('reticle');
+var stage=document.querySelector('.stage');
+var IRIS_MAX_X=17,IRIS_MAX_Y=7;
+function lookAt(dx,dy){
+  iris.style.transform='translate('+Math.round(dx*IRIS_MAX_X)+'px,'+Math.round(dy*IRIS_MAX_Y)+'px)';
+}
+function blink(){
+  eye.classList.add('blink');
+  setTimeout(function(){eye.classList.remove('blink');},140);
+}
+setInterval(function(){
+  if(busy)return;
+  lookAt((Math.random()*2-1)*.6,(Math.random()*2-1)*.5);
+},2200);
+setInterval(function(){if(Math.random()<.7)blink();},3400);
+var LOOK={g:-1,c:0,p:1};
+btns.forEach(function(b){
+  var look=function(){if(!b.disabled)lookAt(LOOK[b.dataset.hand]*.9,.85);};
+  b.addEventListener('pointerenter',look);
+  b.addEventListener('pointerdown',look);
+});
+function lockOn(el){
+  var r=el.getBoundingClientRect(),s=stage.getBoundingClientRect();
+  reticle.style.left=(r.left+r.width/2-s.left)+'px';
+  reticle.style.top=(r.top+r.height/2-s.top)+'px';
+  reticle.classList.remove('show');
+  void reticle.offsetWidth;
+  reticle.classList.add('show');
+}
+
 function reset(){
   brain=makeBrain();round=1;you=0;ai=0;draw=0;predHit=0;predTotal=0;busy=false;
   pending=aiMove(brain);
@@ -314,6 +416,9 @@ function reset(){
   $('callout').innerHTML='好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。';
   $('confBar').style.width='0%';$('confPct').textContent='0%';
   $('confBar').classList.remove('serious');$('meterLabel').textContent='AIの読心レベル';
+  eye.classList.remove('serious');eye.classList.remove('hit');
+  reticle.classList.remove('serious');reticle.classList.remove('show');
+  lookAt(0,0);
   $('overlay').classList.remove('show');
   btns.forEach(function(b){b.disabled=false;});
 }
@@ -338,6 +443,18 @@ function play(h){
   else{draw++;v.textContent='DRAW';v.className='verdict draw';}
   $('sYou').textContent=you;$('sAi').textContent=ai;$('sDraw').textContent=draw;
 
+  if(mv.predicted!==null&&wasPredicted){
+    lockOn(hy);
+    lookAt(-1,.25);
+    eye.classList.add('hit');
+    setTimeout(function(){eye.classList.remove('hit');},700);
+  }else if(mv.predicted!==null){
+    lookAt(.7,-.5);
+    blink();setTimeout(blink,240);
+  }else{
+    lookAt(-1,.25);
+  }
+
   var co=$('callout');
   if(mv.predicted!==null&&wasPredicted&&r==='l'){
     co.innerHTML='<span class="read">AI「'+NAME[h]+'を出すと読んでいました」</span>';
@@ -358,6 +475,8 @@ function play(h){
   if(round>=15){
     confBar.classList.add('serious');
     meterLabel.textContent='AIの読心レベル(本気)';
+    eye.classList.add('serious');
+    reticle.classList.add('serious');
   }else{
     confBar.classList.remove('serious');
     meterLabel.textContent='AIの読心レベル';
