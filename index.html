@@ -54,11 +54,31 @@ body{
 }
 
 /* ---- header ---- */
-header{display:flex;justify-content:space-between;align-items:baseline}
-h1{font-family:var(--disp);font-size:17px;font-weight:400;letter-spacing:.04em}
+header{display:flex;justify-content:center;align-items:baseline}
+h1{font-family:var(--disp);font-size:18px;font-weight:400;letter-spacing:.04em}
 h1 .q{color:var(--ai)}
-.round{font-family:var(--disp);font-size:14px;color:var(--draw)}
-.round b{color:var(--ink);font-size:18px;font-weight:400}
+
+/* ---- round bar ---- */
+.roundbar{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+.roundinfo{
+  display:flex;align-items:baseline;justify-content:center;gap:7px;
+  font-family:var(--disp);
+}
+.roundinfo .rlabel{font-size:13px;color:var(--draw);letter-spacing:.14em}
+.roundinfo .rnow{font-size:26px;color:var(--ink);line-height:1}
+.roundinfo .rtot{font-size:15px;color:var(--draw)}
+.roundinfo .rremain{
+  margin-left:8px;padding:2px 10px;border-radius:99px;
+  font-size:13px;color:var(--draw);background:var(--card);border:1px solid var(--line);
+}
+.roundinfo .rremain.warn{color:#E0311F;border-color:#F4B7AE;background:#FDEEEC}
+.rprog{display:grid;grid-template-columns:repeat(20,1fr);gap:2px}
+.rseg{height:8px;border-radius:2px;background:var(--line);transition:background .3s ease}
+.rseg.done{background:var(--ai)}
+.rseg.warn{background:#E0311F}
+.rseg.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px currentColor}
+.rseg.cur.done{color:var(--ai)}
+.rseg.cur.warn{color:#E0311F}
 
 /* ---- scoreboard ---- */
 .score{
@@ -251,13 +271,22 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
 <div class="app">
   <header>
     <h1>AIに勝てるか<span class="q">?</span></h1>
-    <div class="round">ROUND <b id="round">1</b>/20</div>
   </header>
 
   <div class="score" aria-label="スコア">
     <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
     <div class="draws">DRAW<b id="sDraw">0</b></div>
     <div class="side ai"><span class="tag">AI</span><span class="num" id="sAi">0</span></div>
+  </div>
+
+  <div class="roundbar">
+    <div class="roundinfo">
+      <span class="rlabel">ROUND</span>
+      <span class="rnow" id="round">1</span>
+      <span class="rtot">/ 20</span>
+      <span class="rremain" id="rRemain">あと20戦</span>
+    </div>
+    <div class="rprog" id="rProg" aria-hidden="true"></div>
   </div>
   <div class="streak" id="streak" role="status"></div>
 
@@ -414,6 +443,27 @@ btns.forEach(function(b){
   b.addEventListener('pointerenter',look);
   b.addEventListener('pointerdown',look);
 });
+function renderRound(){
+  $('round').textContent=round;
+  var remain=TOTAL-round+1;
+  var rem=$('rRemain');
+  rem.textContent='あと'+remain+'戦';
+  rem.classList.toggle('warn',remain<=5);
+  var prog=$('rProg');
+  if(prog.children.length!==TOTAL){
+    prog.innerHTML='';
+    for(var j=0;j<TOTAL;j++)prog.appendChild(document.createElement('div'));
+  }
+  var segs=prog.children;
+  for(var i=0;i<TOTAL;i++){
+    var cls='rseg';
+    if(i<round){
+      cls+=(i>=TOTAL-5)?' warn':' done';
+      if(i===round-1)cls+=' cur';
+    }
+    segs[i].className=cls;
+  }
+}
 function updateStreak(){
   var el=$('streak');
   if(streakLen>=2&&streakType==='w'){el.textContent='🔥 '+streakLen+'連勝中!';el.className='streak win';}
@@ -433,7 +483,7 @@ function reset(){
   brain=makeBrain();round=1;you=0;ai=0;draw=0;predHit=0;predTotal=0;busy=false;
   streakType=null;streakLen=0;maxWinStreak=0;updateStreak();
   pending=aiMove(brain);
-  $('round').textContent=round;
+  renderRound();
   $('sYou').textContent=0;$('sAi').textContent=0;$('sDraw').textContent=0;
   $('hYou').textContent='❔';$('hAi').textContent='❔';
   $('verdict').textContent='';$('verdict').className='verdict';
@@ -520,7 +570,7 @@ function play(h){
   if(round>=TOTAL){setTimeout(finish,900);return;}
   round++;
   setTimeout(function(){
-    $('round').textContent=round;
+    renderRound();
     pending=aiMove(brain);
     btns.forEach(function(b){b.disabled=false;});
     busy=false;
