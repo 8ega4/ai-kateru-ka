@@ -29,7 +29,7 @@
   --you-soft:#FFF0E5;
   --ai:#1F3BE0;
   --ai-soft:#E8EBFD;
-  --draw:#7A828F;
+  --draw:#5D6570;
   --disp:'DotGothic16',monospace;
   --body:'Zen Kaku Gothic New',system-ui,sans-serif;
 }
@@ -54,11 +54,31 @@ body{
 }
 
 /* ---- header ---- */
-header{display:flex;justify-content:space-between;align-items:baseline}
-h1{font-family:var(--disp);font-size:17px;font-weight:400;letter-spacing:.04em}
+header{display:flex;justify-content:center;align-items:baseline}
+h1{font-family:var(--disp);font-size:18px;font-weight:400;letter-spacing:.04em}
 h1 .q{color:var(--ai)}
-.round{font-family:var(--disp);font-size:14px;color:var(--draw)}
-.round b{color:var(--ink);font-size:18px;font-weight:400}
+
+/* ---- round bar ---- */
+.roundbar{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+.roundinfo{
+  display:flex;align-items:baseline;justify-content:center;gap:7px;
+  font-family:var(--disp);
+}
+.roundinfo .rlabel{font-size:13px;color:var(--draw);letter-spacing:.14em}
+.roundinfo .rnow{font-size:26px;color:var(--ink);line-height:1}
+.roundinfo .rtot{font-size:15px;color:var(--draw)}
+.roundinfo .rremain{
+  margin-left:8px;padding:2px 10px;border-radius:99px;
+  font-size:13px;color:var(--draw);background:var(--card);border:1px solid var(--line);
+}
+.roundinfo .rremain.warn{color:#E0311F;border-color:#F4B7AE;background:#FDEEEC}
+.rprog{display:grid;grid-template-columns:repeat(20,1fr);gap:2px}
+.rseg{height:8px;border-radius:2px;background:var(--line);transition:background .3s ease}
+.rseg.done{background:var(--ai)}
+.rseg.warn{background:#E0311F}
+.rseg.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px currentColor}
+.rseg.cur.done{color:var(--ai)}
+.rseg.cur.warn{color:#E0311F}
 
 /* ---- scoreboard ---- */
 .score{
@@ -67,19 +87,21 @@ h1 .q{color:var(--ai)}
   padding:10px 16px;
 }
 .side{display:flex;flex-direction:column;gap:2px}
-.side.ai{align-items:flex-end}
-.side .tag{font-family:var(--disp);font-size:11px;letter-spacing:.12em}
+.side.you{align-items:flex-end}
+.side .tag{font-family:var(--disp);font-size:13px;letter-spacing:.12em}
 .side.you .tag{color:var(--you)}
 .side.ai .tag{color:var(--ai)}
 .side .num{font-family:var(--disp);font-size:34px;line-height:1}
-.draws{font-family:var(--disp);font-size:11px;color:var(--draw);text-align:center;padding:0 12px}
-.draws b{display:block;font-size:16px;font-weight:400;color:var(--ink)}
+.side.you .num{color:var(--you)}
+.side.ai .num{color:var(--ai)}
+.draws{font-family:var(--disp);font-size:13px;color:var(--draw);text-align:center;padding:0 12px}
+.draws b{display:block;font-size:17px;font-weight:400;color:var(--ink)}
 
 /* ---- streak ---- */
 .streak{
-  height:16px;margin-top:-6px;
-  font-family:var(--disp);font-size:12.5px;letter-spacing:.06em;
-  text-align:center;line-height:16px;
+  height:18px;margin-top:-6px;
+  font-family:var(--disp);font-size:14px;letter-spacing:.06em;
+  text-align:center;line-height:18px;
 }
 .streak.win{color:var(--you)}
 .streak.lose{color:var(--ai)}
@@ -87,27 +109,34 @@ h1 .q{color:var(--ai)}
 /* ---- stage ---- */
 .stage{
   flex:1;
-  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  background:
+    linear-gradient(90deg,rgba(31,59,224,.06),rgba(31,59,224,0) 42%,rgba(255,107,26,0) 58%,rgba(255,107,26,.06)),
+    var(--card);
+  border:1px solid var(--line);border-radius:18px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:8px;padding:18px 14px;position:relative;overflow:hidden;min-height:230px;
 }
 .hands{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%}
+.handcol{display:flex;flex-direction:column;align-items:center;gap:3px}
+.handlabel{font-family:var(--disp);font-size:12px;letter-spacing:.12em}
+.handcol.you .handlabel{color:var(--you)}
+.handcol.ai .handlabel{color:var(--ai)}
 .hand{font-size:64px;text-align:center;line-height:1.2;filter:grayscale(0);transition:transform .18s ease}
-.hand.ai-hand{transform:scaleX(-1)}
+.handcol.you .hand{transform:scaleX(-1)}
 .hand.pop{animation:pop .3s ease}
 @keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
-.hand.ai-hand.pop{animation:popflip .3s ease}
+.handcol.you .hand.pop{animation:popflip .3s ease}
 @keyframes popflip{0%{transform:scaleX(-1) scale(.4)}70%{transform:scaleX(-1) scale(1.15)}100%{transform:scaleX(-1) scale(1)}}
 .vs{font-family:var(--disp);font-size:15px;color:var(--draw);padding:0 6px}
 .verdict{
-  font-family:var(--disp);font-size:24px;letter-spacing:.08em;height:32px;
+  font-family:var(--disp);font-size:30px;letter-spacing:.08em;height:38px;
   display:flex;align-items:center;
 }
 .verdict.win{color:var(--you)}
 .verdict.lose{color:var(--ai)}
 .verdict.draw{color:var(--draw)}
 .callout{
-  font-size:12.5px;color:var(--draw);min-height:36px;text-align:center;line-height:1.5;
+  font-size:15px;color:var(--draw);min-height:42px;text-align:center;line-height:1.5;
   padding:0 8px;
 }
 .callout .read{color:var(--ai);font-weight:700}
@@ -193,8 +222,8 @@ h1 .q{color:var(--ai)}
   transition:transform .1s ease,border-color .15s,background .15s;
   touch-action:manipulation;
 }
-.hbtn .e{font-size:36px;line-height:1.1}
-.hbtn .n{font-size:12px;font-weight:700;color:var(--draw)}
+.hbtn .e{font-size:38px;line-height:1.1}
+.hbtn .n{font-size:14px;font-weight:700;color:var(--draw)}
 .hbtn:active{transform:scale(.94);border-color:var(--you);background:var(--you-soft)}
 .hbtn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
 .hbtn:disabled{opacity:.45;pointer-events:none}
@@ -211,25 +240,25 @@ h1 .q{color:var(--ai)}
   animation:rise .35s ease;
 }
 @keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
-.result .headline{font-family:var(--disp);font-size:22px;line-height:1.4}
+.result .headline{font-family:var(--disp);font-size:25px;line-height:1.4}
 .result .headline.win{color:var(--you)}
 .result .headline.lose{color:var(--ai)}
 .result .title-badge{
-  align-self:center;font-family:var(--disp);font-size:14px;
+  align-self:center;font-family:var(--disp);font-size:15.5px;
   border:1.5px solid var(--ink);border-radius:99px;padding:6px 18px;
 }
 .result .stats{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
-  font-size:12.5px;color:var(--draw);
+  font-size:14px;color:var(--draw);
 }
 .result .stats div{background:var(--bg);border-radius:10px;padding:10px 6px}
-.result .stats b{display:block;font-family:var(--disp);font-size:20px;font-weight:400;color:var(--ink);margin-top:2px}
+.result .stats b{display:block;font-family:var(--disp);font-size:22px;font-weight:400;color:var(--ink);margin-top:2px}
 .result .stats .readpct b{color:var(--ai)}
 .result .stats .streakstat{grid-column:1/-1}
 .result .stats .streakstat b{color:var(--you)}
-.result .comment{font-size:13px;line-height:1.7}
-.result .best{font-family:var(--disp);font-size:13px;color:var(--you)}
-.result .best-line{font-size:11px;color:var(--draw)}
+.result .comment{font-size:14.5px;line-height:1.7}
+.result .best{font-family:var(--disp);font-size:14px;color:var(--you)}
+.result .best-line{font-size:12.5px;color:var(--draw)}
 .btn{
   font-family:var(--body);font-weight:700;font-size:15px;
   border-radius:14px;padding:14px;cursor:pointer;border:none;
@@ -240,7 +269,37 @@ h1 .q{color:var(--ai)}
 .btn.retry{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
 .btn:active{transform:scale(.97)}
 
-footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
+footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
+
+/* ---- 決着演出 ---- */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+.confetti{
+  position:absolute;top:-18px;width:9px;height:14px;border-radius:2px;
+  animation:confetti-fall 1.3s linear forwards;
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(103vh) rotate(400deg);opacity:.85}
+}
+.scanline{
+  position:absolute;left:0;right:0;height:38%;top:-38%;
+  background:linear-gradient(180deg,rgba(31,59,224,0),rgba(31,59,224,.26) 60%,rgba(31,59,224,.5));
+  border-bottom:2.5px solid var(--ai);
+  animation:scan .8s ease-in forwards;
+}
+@keyframes scan{0%{top:-38%}100%{top:100%}}
+.fx-analyze{
+  position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  font-family:var(--disp);font-size:22px;letter-spacing:.22em;color:var(--ai);
+  opacity:0;animation:analyze .8s ease forwards;
+}
+@keyframes analyze{0%,40%{opacity:0}55%,85%{opacity:1}100%{opacity:0}}
+.clash{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--you),transparent 44%,transparent 56%,var(--ai));
+  opacity:0;animation:clash .5s ease forwards;
+}
+@keyframes clash{0%{opacity:0;transform:scaleX(1.7)}45%{opacity:.5}100%{opacity:0;transform:scaleX(1)}}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -251,13 +310,22 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
 <div class="app">
   <header>
     <h1>AIに勝てるか<span class="q">?</span></h1>
-    <div class="round">ROUND <b id="round">1</b>/20</div>
   </header>
 
   <div class="score" aria-label="スコア">
-    <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
-    <div class="draws">DRAW<b id="sDraw">0</b></div>
     <div class="side ai"><span class="tag">AI</span><span class="num" id="sAi">0</span></div>
+    <div class="draws">DRAW<b id="sDraw">0</b></div>
+    <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
+  </div>
+
+  <div class="roundbar">
+    <div class="roundinfo">
+      <span class="rlabel">ROUND</span>
+      <span class="rnow" id="round">1</span>
+      <span class="rtot">/ 20</span>
+      <span class="rremain" id="rRemain">あと20戦</span>
+    </div>
+    <div class="rprog" id="rProg" aria-hidden="true"></div>
   </div>
   <div class="streak" id="streak" role="status"></div>
 
@@ -269,9 +337,15 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
       </div>
     </div>
     <div class="hands">
-      <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
+      <div class="handcol ai">
+        <div class="hand" id="hAi" aria-label="AIの手">❔</div>
+        <div class="handlabel">AI</div>
+      </div>
       <div class="vs">VS</div>
-      <div class="hand ai-hand" id="hAi" aria-label="AIの手">❔</div>
+      <div class="handcol you">
+        <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
+        <div class="handlabel">YOU</div>
+      </div>
     </div>
     <div class="verdict" id="verdict" role="status"></div>
     <div class="callout" id="callout">好きな手を出してください。AIはあなたの<b>癖</b>を学習し始めます。</div>
@@ -301,6 +375,8 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
 
   <footer>AIは通信せずこの画面の中だけで学習します。ログイン不要。</footer>
 </div>
+
+<div class="fx" id="fx" aria-hidden="true"></div>
 
 <div class="overlay" id="overlay">
   <div class="result" role="dialog" aria-label="結果">
@@ -390,6 +466,39 @@ function learn(b,humanMove,aiPlayed){
 var brain,round,you,ai,draw,predHit,predTotal,pending,busy;
 var streakType,streakLen,maxWinStreak;
 var $=function(id){return document.getElementById(id);};
+var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---- 決着演出 ----
+function clearFx(){var fx=$('fx');fx.innerHTML='';}
+function runFinishFx(kind,done){
+  if(prefersReduced){done();return;}
+  var fx=$('fx'),i;
+  clearFx();
+  if(kind==='win'){
+    for(i=0;i<22;i++){
+      var p=document.createElement('div');
+      p.className='confetti';
+      p.style.left=(Math.random()*100)+'%';
+      p.style.background=(i%2)?'var(--you)':'#FFB07A';
+      p.style.animationDelay=(Math.random()*0.35)+'s';
+      p.style.animationDuration=(1+Math.random()*0.6)+'s';
+      fx.appendChild(p);
+    }
+    setTimeout(done,600);
+    setTimeout(clearFx,1600);
+  }else if(kind==='lose'){
+    var sl=document.createElement('div');sl.className='scanline';
+    var tx=document.createElement('div');tx.className='fx-analyze';tx.textContent='解析完了';
+    fx.appendChild(sl);fx.appendChild(tx);
+    setTimeout(done,850);
+    setTimeout(clearFx,1000);
+  }else{
+    var fl=document.createElement('div');fl.className='clash';
+    fx.appendChild(fl);
+    setTimeout(done,550);
+    setTimeout(clearFx,700);
+  }
+}
 var btns=document.querySelectorAll('.hbtn');
 
 // ---- 単眼アバター & 照準 ----
@@ -414,6 +523,27 @@ btns.forEach(function(b){
   b.addEventListener('pointerenter',look);
   b.addEventListener('pointerdown',look);
 });
+function renderRound(){
+  $('round').textContent=round;
+  var remain=TOTAL-round+1;
+  var rem=$('rRemain');
+  rem.textContent='あと'+remain+'戦';
+  rem.classList.toggle('warn',remain<=5);
+  var prog=$('rProg');
+  if(prog.children.length!==TOTAL){
+    prog.innerHTML='';
+    for(var j=0;j<TOTAL;j++)prog.appendChild(document.createElement('div'));
+  }
+  var segs=prog.children;
+  for(var i=0;i<TOTAL;i++){
+    var cls='rseg';
+    if(i<round){
+      cls+=(i>=TOTAL-5)?' warn':' done';
+      if(i===round-1)cls+=' cur';
+    }
+    segs[i].className=cls;
+  }
+}
 function updateStreak(){
   var el=$('streak');
   if(streakLen>=2&&streakType==='w'){el.textContent='🔥 '+streakLen+'連勝中!';el.className='streak win';}
@@ -433,7 +563,7 @@ function reset(){
   brain=makeBrain();round=1;you=0;ai=0;draw=0;predHit=0;predTotal=0;busy=false;
   streakType=null;streakLen=0;maxWinStreak=0;updateStreak();
   pending=aiMove(brain);
-  $('round').textContent=round;
+  renderRound();
   $('sYou').textContent=0;$('sAi').textContent=0;$('sDraw').textContent=0;
   $('hYou').textContent='❔';$('hAi').textContent='❔';
   $('verdict').textContent='';$('verdict').className='verdict';
@@ -443,6 +573,7 @@ function reset(){
   eye.classList.remove('serious');eye.classList.remove('hit');
   reticle.classList.remove('serious');reticle.classList.remove('show');
   lookAt(0,0);
+  clearFx();
   $('overlay').classList.remove('show');
   btns.forEach(function(b){b.disabled=false;});
 }
@@ -520,7 +651,7 @@ function play(h){
   if(round>=TOTAL){setTimeout(finish,900);return;}
   round++;
   setTimeout(function(){
-    $('round').textContent=round;
+    renderRound();
     pending=aiMove(brain);
     btns.forEach(function(b){b.disabled=false;});
     busy=false;
@@ -578,7 +709,8 @@ function finish(){
   $('rBestNew').hidden=!isNewBest;
   $('rBest').textContent='自己ベスト: '+best.bestWins+'勝 / 読まれ度'+best.bestReadPct+'%';
 
-  $('overlay').classList.add('show');
+  var kind=you>ai?'win':you<ai?'lose':'draw';
+  runFinishFx(kind,function(){$('overlay').classList.add('show');});
 
   $('btnShare').onclick=function(){
     var text=shareTextFor(readPct,t[1]);
