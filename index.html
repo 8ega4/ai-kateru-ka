@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ECEFF3">
 <title>AIに勝てるか? じゃんけん読心バトル</title>
 <meta name="description" content="AIがあなたの出す手を予測して先回りする。20戦して勝ち越せたら本物。ログイン不要・完全無料。">
 <meta property="og:title" content="AIに勝てるか? じゃんけん読心バトル">
 <meta property="og:description" content="AIがあなたの癖を学習して手を読んでくる。20戦で勝ち越せるか?">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://8ega4.github.io/ai-kateru-ka/">
-<meta property="og:image" content="https://8ega4.github.io/ai-kateru-ka/images/ogp.png">
-<meta property="og:image:width" content="1536">
-<meta property="og:image:height" content="1024">
+<meta property="og:image" content="https://8ega4.github.io/ai-kateru-ka/images/ogp.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -71,6 +74,15 @@ h1 .q{color:var(--ai)}
 .side .num{font-family:var(--disp);font-size:34px;line-height:1}
 .draws{font-family:var(--disp);font-size:11px;color:var(--draw);text-align:center;padding:0 12px}
 .draws b{display:block;font-size:16px;font-weight:400;color:var(--ink)}
+
+/* ---- streak ---- */
+.streak{
+  height:16px;margin-top:-6px;
+  font-family:var(--disp);font-size:12.5px;letter-spacing:.06em;
+  text-align:center;line-height:16px;
+}
+.streak.win{color:var(--you)}
+.streak.lose{color:var(--ai)}
 
 /* ---- stage ---- */
 .stage{
@@ -213,6 +225,8 @@ h1 .q{color:var(--ai)}
 .result .stats div{background:var(--bg);border-radius:10px;padding:10px 6px}
 .result .stats b{display:block;font-family:var(--disp);font-size:20px;font-weight:400;color:var(--ink);margin-top:2px}
 .result .stats .readpct b{color:var(--ai)}
+.result .stats .streakstat{grid-column:1/-1}
+.result .stats .streakstat b{color:var(--you)}
 .result .comment{font-size:13px;line-height:1.7}
 .result .best{font-family:var(--disp);font-size:13px;color:var(--you)}
 .result .best-line{font-size:11px;color:var(--draw)}
@@ -245,6 +259,7 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="draws">DRAW<b id="sDraw">0</b></div>
     <div class="side ai"><span class="tag">AI</span><span class="num" id="sAi">0</span></div>
   </div>
+  <div class="streak" id="streak" role="status"></div>
 
   <div class="stage">
     <div class="ai-eye" id="aiEye" aria-hidden="true">
@@ -294,6 +309,7 @@ footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="stats">
       <div>戦績<b id="rScore"></b></div>
       <div class="readpct">読まれ度<b id="rRead"></b></div>
+      <div class="streakstat">最大連勝<b id="rMaxStreak"></b></div>
     </div>
     <div class="comment" id="rComment"></div>
     <div class="best" id="rBestNew" hidden>🎉 自己ベスト更新!</div>
@@ -372,6 +388,7 @@ function learn(b,humanMove,aiPlayed){
 
 // ---- game state ----
 var brain,round,you,ai,draw,predHit,predTotal,pending,busy;
+var streakType,streakLen,maxWinStreak;
 var $=function(id){return document.getElementById(id);};
 var btns=document.querySelectorAll('.hbtn');
 
@@ -397,6 +414,12 @@ btns.forEach(function(b){
   b.addEventListener('pointerenter',look);
   b.addEventListener('pointerdown',look);
 });
+function updateStreak(){
+  var el=$('streak');
+  if(streakLen>=2&&streakType==='w'){el.textContent='🔥 '+streakLen+'連勝中!';el.className='streak win';}
+  else if(streakLen>=2&&streakType==='l'){el.textContent='🌀 '+streakLen+'連敗中…';el.className='streak lose';}
+  else{el.textContent='';el.className='streak';}
+}
 function lockOn(el){
   var r=el.getBoundingClientRect(),s=stage.getBoundingClientRect();
   reticle.style.left=(r.left+r.width/2-s.left)+'px';
@@ -408,6 +431,7 @@ function lockOn(el){
 
 function reset(){
   brain=makeBrain();round=1;you=0;ai=0;draw=0;predHit=0;predTotal=0;busy=false;
+  streakType=null;streakLen=0;maxWinStreak=0;updateStreak();
   pending=aiMove(brain);
   $('round').textContent=round;
   $('sYou').textContent=0;$('sAi').textContent=0;$('sDraw').textContent=0;
@@ -443,6 +467,14 @@ function play(h){
   else{draw++;v.textContent='DRAW';v.className='verdict draw';}
   $('sYou').textContent=you;$('sAi').textContent=ai;$('sDraw').textContent=draw;
 
+  // ストリーク更新(あいこは途切れさせずカウントもしない)
+  if(r!=='d'){
+    if(streakType===r)streakLen++;
+    else{streakType=r;streakLen=1;}
+    if(r==='w'&&streakLen>maxWinStreak)maxWinStreak=streakLen;
+  }
+  updateStreak();
+
   if(mv.predicted!==null&&wasPredicted){
     lockOn(hy);
     lookAt(-1,.25);
@@ -464,6 +496,9 @@ function play(h){
     co.textContent='AIの予測は'+NAME[mv.predicted]+'。読みが外れました。';
   }else{
     co.textContent='AI「まだデータが足りない…」';
+  }
+  if(r==='l'&&streakLen===3){
+    co.innerHTML+='<br><span class="read">AI「パターンが見えてきました」</span>';
   }
 
   // 読心レベル = 予測的中率(直近の自信も加味)
@@ -530,6 +565,7 @@ function finish(){
   $('rTitle').textContent=t[1];
   $('rScore').textContent=you+'勝'+ai+'敗'+draw+'分';
   $('rRead').textContent=readPct+'%';
+  $('rMaxStreak').textContent=maxWinStreak;
   $('rComment').textContent=t[2];
 
   var best=loadBest();
