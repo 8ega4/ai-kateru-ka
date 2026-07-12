@@ -417,6 +417,7 @@ function finish(){
     var url=new URL(location.origin+location.pathname);
     url.searchParams.set('utm_source','x');
     url.searchParams.set('utm_medium','share');
+    url.searchParams.set('utm_content','play'+best.plays);
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url.toString()),'_blank');
   };
 }
@@ -429,5 +430,6 @@ $('btnRetry').addEventListener('click',reset);
 reset();
 })();
 </script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "373c1112fe524e3aa18bc06c6682e777"}'></script>
 </body>
 </html>
