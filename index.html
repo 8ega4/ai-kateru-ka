@@ -87,7 +87,7 @@ h1 .q{color:var(--ai)}
   padding:10px 16px;
 }
 .side{display:flex;flex-direction:column;gap:2px}
-.side.ai{align-items:flex-end}
+.side.you{align-items:flex-end}
 .side .tag{font-family:var(--disp);font-size:13px;letter-spacing:.12em}
 .side.you .tag{color:var(--you)}
 .side.ai .tag{color:var(--ai)}
@@ -110,7 +110,7 @@ h1 .q{color:var(--ai)}
 .stage{
   flex:1;
   background:
-    linear-gradient(90deg,rgba(255,107,26,.06),rgba(255,107,26,0) 42%,rgba(31,59,224,0) 58%,rgba(31,59,224,.06)),
+    linear-gradient(90deg,rgba(31,59,224,.06),rgba(31,59,224,0) 42%,rgba(255,107,26,0) 58%,rgba(255,107,26,.06)),
     var(--card);
   border:1px solid var(--line);border-radius:18px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -122,10 +122,10 @@ h1 .q{color:var(--ai)}
 .handcol.you .handlabel{color:var(--you)}
 .handcol.ai .handlabel{color:var(--ai)}
 .hand{font-size:64px;text-align:center;line-height:1.2;filter:grayscale(0);transition:transform .18s ease}
-.hand.ai-hand{transform:scaleX(-1)}
+.handcol.you .hand{transform:scaleX(-1)}
 .hand.pop{animation:pop .3s ease}
 @keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
-.hand.ai-hand.pop{animation:popflip .3s ease}
+.handcol.you .hand.pop{animation:popflip .3s ease}
 @keyframes popflip{0%{transform:scaleX(-1) scale(.4)}70%{transform:scaleX(-1) scale(1.15)}100%{transform:scaleX(-1) scale(1)}}
 .vs{font-family:var(--disp);font-size:15px;color:var(--draw);padding:0 6px}
 .verdict{
@@ -313,9 +313,9 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
   </header>
 
   <div class="score" aria-label="スコア">
-    <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
-    <div class="draws">DRAW<b id="sDraw">0</b></div>
     <div class="side ai"><span class="tag">AI</span><span class="num" id="sAi">0</span></div>
+    <div class="draws">DRAW<b id="sDraw">0</b></div>
+    <div class="side you"><span class="tag">YOU</span><span class="num" id="sYou">0</span></div>
   </div>
 
   <div class="roundbar">
@@ -337,14 +337,14 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
       </div>
     </div>
     <div class="hands">
+      <div class="handcol ai">
+        <div class="hand" id="hAi" aria-label="AIの手">❔</div>
+        <div class="handlabel">AI</div>
+      </div>
+      <div class="vs">VS</div>
       <div class="handcol you">
         <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
         <div class="handlabel">YOU</div>
-      </div>
-      <div class="vs">VS</div>
-      <div class="handcol ai">
-        <div class="hand ai-hand" id="hAi" aria-label="AIの手">❔</div>
-        <div class="handlabel">AI</div>
       </div>
     </div>
     <div class="verdict" id="verdict" role="status"></div>
