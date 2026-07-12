@@ -68,18 +68,18 @@ h1 .q{color:var(--ai)}
 }
 .side{display:flex;flex-direction:column;gap:2px}
 .side.ai{align-items:flex-end}
-.side .tag{font-family:var(--disp);font-size:11px;letter-spacing:.12em}
+.side .tag{font-family:var(--disp);font-size:13px;letter-spacing:.12em}
 .side.you .tag{color:var(--you)}
 .side.ai .tag{color:var(--ai)}
 .side .num{font-family:var(--disp);font-size:34px;line-height:1}
-.draws{font-family:var(--disp);font-size:11px;color:var(--draw);text-align:center;padding:0 12px}
-.draws b{display:block;font-size:16px;font-weight:400;color:var(--ink)}
+.draws{font-family:var(--disp);font-size:13px;color:var(--draw);text-align:center;padding:0 12px}
+.draws b{display:block;font-size:17px;font-weight:400;color:var(--ink)}
 
 /* ---- streak ---- */
 .streak{
-  height:16px;margin-top:-6px;
-  font-family:var(--disp);font-size:12.5px;letter-spacing:.06em;
-  text-align:center;line-height:16px;
+  height:18px;margin-top:-6px;
+  font-family:var(--disp);font-size:14px;letter-spacing:.06em;
+  text-align:center;line-height:18px;
 }
 .streak.win{color:var(--you)}
 .streak.lose{color:var(--ai)}
@@ -100,14 +100,14 @@ h1 .q{color:var(--ai)}
 @keyframes popflip{0%{transform:scaleX(-1) scale(.4)}70%{transform:scaleX(-1) scale(1.15)}100%{transform:scaleX(-1) scale(1)}}
 .vs{font-family:var(--disp);font-size:15px;color:var(--draw);padding:0 6px}
 .verdict{
-  font-family:var(--disp);font-size:24px;letter-spacing:.08em;height:32px;
+  font-family:var(--disp);font-size:30px;letter-spacing:.08em;height:38px;
   display:flex;align-items:center;
 }
 .verdict.win{color:var(--you)}
 .verdict.lose{color:var(--ai)}
 .verdict.draw{color:var(--draw)}
 .callout{
-  font-size:12.5px;color:var(--draw);min-height:36px;text-align:center;line-height:1.5;
+  font-size:15px;color:var(--draw);min-height:42px;text-align:center;line-height:1.5;
   padding:0 8px;
 }
 .callout .read{color:var(--ai);font-weight:700}
@@ -193,8 +193,8 @@ h1 .q{color:var(--ai)}
   transition:transform .1s ease,border-color .15s,background .15s;
   touch-action:manipulation;
 }
-.hbtn .e{font-size:36px;line-height:1.1}
-.hbtn .n{font-size:12px;font-weight:700;color:var(--draw)}
+.hbtn .e{font-size:38px;line-height:1.1}
+.hbtn .n{font-size:14px;font-weight:700;color:var(--draw)}
 .hbtn:active{transform:scale(.94);border-color:var(--you);background:var(--you-soft)}
 .hbtn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
 .hbtn:disabled{opacity:.45;pointer-events:none}
@@ -211,25 +211,25 @@ h1 .q{color:var(--ai)}
   animation:rise .35s ease;
 }
 @keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
-.result .headline{font-family:var(--disp);font-size:22px;line-height:1.4}
+.result .headline{font-family:var(--disp);font-size:25px;line-height:1.4}
 .result .headline.win{color:var(--you)}
 .result .headline.lose{color:var(--ai)}
 .result .title-badge{
-  align-self:center;font-family:var(--disp);font-size:14px;
+  align-self:center;font-family:var(--disp);font-size:15.5px;
   border:1.5px solid var(--ink);border-radius:99px;padding:6px 18px;
 }
 .result .stats{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
-  font-size:12.5px;color:var(--draw);
+  font-size:14px;color:var(--draw);
 }
 .result .stats div{background:var(--bg);border-radius:10px;padding:10px 6px}
-.result .stats b{display:block;font-family:var(--disp);font-size:20px;font-weight:400;color:var(--ink);margin-top:2px}
+.result .stats b{display:block;font-family:var(--disp);font-size:22px;font-weight:400;color:var(--ink);margin-top:2px}
 .result .stats .readpct b{color:var(--ai)}
 .result .stats .streakstat{grid-column:1/-1}
 .result .stats .streakstat b{color:var(--you)}
-.result .comment{font-size:13px;line-height:1.7}
-.result .best{font-family:var(--disp);font-size:13px;color:var(--you)}
-.result .best-line{font-size:11px;color:var(--draw)}
+.result .comment{font-size:14.5px;line-height:1.7}
+.result .best{font-family:var(--disp);font-size:14px;color:var(--you)}
+.result .best-line{font-size:12.5px;color:var(--draw)}
 .btn{
   font-family:var(--body);font-weight:700;font-size:15px;
   border-radius:14px;padding:14px;cursor:pointer;border:none;
@@ -240,7 +240,7 @@ h1 .q{color:var(--ai)}
 .btn.retry{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
 .btn:active{transform:scale(.97)}
 
-footer{font-size:10.5px;color:var(--draw);text-align:center;line-height:1.6}
+footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
