@@ -375,6 +375,20 @@ function titleFor(readPct){
   return['🧠 AIの勝ち','称号: 惜しい人類','読み合いはほぼ互角。運が向けば次は勝てるかもしれません。'];
 }
 
+function shareTextFor(readPct,titleName){
+  var score=you+'勝'+ai+'敗';
+  if(you>ai){
+    return 'AIのじゃんけん読心に勝った('+score+')。称号「'+titleName.replace('称号: ','')+'」。\nお前も勝てるならやってみろ→\n#AIに勝てるか';
+  }
+  if(you===ai){
+    return 'AIと互角だった('+score+')。決着つけられる人いる?→\n#AIに勝てるか';
+  }
+  if(readPct>=70){
+    return 'AIに手の内を'+readPct+'%読まれて負けた…。\n人間の代表、誰か仇を取ってくれ→\n#AIに勝てるか';
+  }
+  return 'AIじゃんけんに'+score+'で負けた。惜しかった。\nリベンジ前にお前も試してみて→\n#AIに勝てるか';
+}
+
 function finish(){
   var readPct=predTotal>0?Math.round(predHit/predTotal*100):0;
   var t=titleFor(readPct);
@@ -399,9 +413,11 @@ function finish(){
   $('overlay').classList.add('show');
 
   $('btnShare').onclick=function(){
-    var text='【AIに勝てるか? じゃんけん読心バトル】\n'+t[0]+' '+you+'勝'+ai+'敗'+draw+'分\n'+t[1]+'(読まれ度'+readPct+'%)\n#AIに勝てるか\n';
-    var url=location.href.split('#')[0];
-    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank');
+    var text=shareTextFor(readPct,t[1]);
+    var url=new URL(location.origin+location.pathname);
+    url.searchParams.set('utm_source','x');
+    url.searchParams.set('utm_medium','share');
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url.toString()),'_blank');
   };
 }
 
