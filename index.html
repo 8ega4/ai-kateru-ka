@@ -121,6 +121,39 @@ h1 .q{color:var(--ai)}
 .handlabel{font-family:var(--disp);font-size:12px;letter-spacing:.12em}
 .handcol.you .handlabel{color:var(--you)}
 .handcol.ai .handlabel{color:var(--ai)}
+/* ---- 陣営アバター(AI=ロボット/YOU=人型) ---- */
+.avatar{width:34px;height:32px;position:relative;flex:0 0 auto}
+.avatar-ai .bot-head{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:28px;height:22px;
+  background:var(--ai-soft);border:2px solid var(--ai);
+  clip-path:polygon(14% 0,86% 0,100% 22%,100% 100%,0 100%,0 22%);
+}
+.avatar-ai .bot-visor{
+  position:absolute;left:50%;bottom:8px;transform:translateX(-50%);
+  width:16px;height:5px;border-radius:2px;background:var(--ai);
+}
+.avatar-ai .bot-antenna{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  width:2px;height:9px;background:var(--ai);
+}
+.avatar-ai .bot-antenna::after{
+  content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  width:6px;height:6px;border-radius:50%;background:var(--ai);
+  box-shadow:0 0 4px rgba(31,59,224,.5);
+}
+.avatar-you .hu-head{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  width:16px;height:16px;border-radius:50%;
+  background:var(--you-soft);border:2px solid var(--you);
+}
+.avatar-you .hu-shoulders{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:32px;height:18px;
+  background:var(--you-soft);border:2px solid var(--you);border-bottom:none;
+  border-radius:16px 16px 0 0;
+}
+
 .hand{font-size:64px;text-align:center;line-height:1.2;filter:grayscale(0);transition:transform .18s ease}
 .handcol.you .hand{transform:scaleX(-1)}
 .hand.pop{animation:pop .3s ease}
@@ -338,11 +371,17 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
     </div>
     <div class="hands">
       <div class="handcol ai">
+        <div class="avatar avatar-ai" aria-hidden="true">
+          <div class="bot-head"></div><div class="bot-visor"></div><div class="bot-antenna"></div>
+        </div>
         <div class="hand" id="hAi" aria-label="AIの手">❔</div>
         <div class="handlabel">AI</div>
       </div>
       <div class="vs">VS</div>
       <div class="handcol you">
+        <div class="avatar avatar-you" aria-hidden="true">
+          <div class="hu-head"></div><div class="hu-shoulders"></div>
+        </div>
         <div class="hand" id="hYou" aria-label="あなたの手">❔</div>
         <div class="handlabel">YOU</div>
       </div>
@@ -608,14 +647,14 @@ function play(h){
 
   if(mv.predicted!==null&&wasPredicted){
     lockOn(hy);
-    lookAt(-1,.25);
+    lookAt(1,.25);
     eye.classList.add('hit');
     setTimeout(function(){eye.classList.remove('hit');},700);
   }else if(mv.predicted!==null){
-    lookAt(.7,-.5);
+    lookAt(-.7,-.5);
     blink();setTimeout(blink,240);
   }else{
-    lookAt(-1,.25);
+    lookAt(1,.25);
   }
 
   var co=$('callout');
