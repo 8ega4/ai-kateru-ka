@@ -757,6 +757,7 @@ function finish(){
     url.searchParams.set('utm_source','x');
     url.searchParams.set('utm_medium','share');
     url.searchParams.set('utm_content','play'+best.plays);
+    url.searchParams.set('utm_campaign','v2');
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url.toString()),'_blank');
   };
 }
