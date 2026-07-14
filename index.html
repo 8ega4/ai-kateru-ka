@@ -429,6 +429,7 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="comment" id="rComment"></div>
     <div class="best" id="rBestNew" hidden>🎉 自己ベスト更新!</div>
     <div class="best-line" id="rBest"></div>
+    <div class="best-line">タグ検索で他の挑戦者の読まれ度が見られます</div>
     <button class="btn share" id="btnShare">結果をXでシェア</button>
     <button class="btn retry" id="btnRetry">もう一回挑む</button>
   </div>
@@ -712,18 +713,32 @@ function titleFor(readPct){
   return['🧠 AIの勝ち','称号: 惜しい人類','読み合いはほぼ互角。運が向けば次は勝てるかもしれません。'];
 }
 
-function shareTextFor(readPct,titleName){
+function shareTextFor(readPct,titleName,best){
   var score=you+'勝'+ai+'敗';
+  var base;
   if(you>ai){
-    return 'AIのじゃんけん読心に勝った('+score+')。称号「'+titleName.replace('称号: ','')+'」。\nお前も勝てるならやってみろ→\n#AIに勝てるか';
+    base='AIのじゃんけん読心に勝った('+score+')。称号「'+titleName.replace('称号: ','')+'」。\nお前も勝てるならやってみろ→';
+  }else if(you===ai){
+    base='AIと互角だった('+score+')。決着つけられる人いる?→';
+  }else if(readPct>=70){
+    base='AIに手の内を'+readPct+'%読まれて負けた…。\n人間の代表、誰か仇を取ってくれ→';
+  }else{
+    base='AIじゃんけんに'+score+'で負けた。惜しかった。\nリベンジ前にお前も試してみて→';
   }
-  if(you===ai){
-    return 'AIと互角だった('+score+')。決着つけられる人いる?→\n#AIに勝てるか';
+
+  var lines=[base];
+  if(best&&best.plays>=2&&best.bestReadPct!==null){
+    lines.push('自己ベスト: '+best.bestWins+'勝 / 読まれ度'+best.bestReadPct+'%');
   }
-  if(readPct>=70){
-    return 'AIに手の内を'+readPct+'%読まれて負けた…。\n人間の代表、誰か仇を取ってくれ→\n#AIに勝てるか';
+
+  var URL_LEN=23,LIMIT=140;
+  var challengeLong='#AIに勝てるか で挑戦者の記録が見られます。\n読まれ度一桁は出せるか?';
+  var challengeShort='#AIに勝てるか で挑戦者の記録が見られます。\n読まれ度一桁、出せる?';
+  var full=lines.concat([challengeLong]).join('\n');
+  if(full.length+URL_LEN>LIMIT){
+    full=lines.concat([challengeShort]).join('\n');
   }
-  return 'AIじゃんけんに'+score+'で負けた。惜しかった。\nリベンジ前にお前も試してみて→\n#AIに勝てるか';
+  return full;
 }
 
 function finish(){
@@ -752,12 +767,12 @@ function finish(){
   runFinishFx(kind,function(){$('overlay').classList.add('show');});
 
   $('btnShare').onclick=function(){
-    var text=shareTextFor(readPct,t[1]);
+    var text=shareTextFor(readPct,t[1],best);
     var url=new URL(location.origin+location.pathname);
     url.searchParams.set('utm_source','x');
     url.searchParams.set('utm_medium','share');
     url.searchParams.set('utm_content','play'+best.plays);
-    url.searchParams.set('utm_campaign','v2');
+    url.searchParams.set('utm_campaign','v3');
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url.toString()),'_blank');
   };
 }
