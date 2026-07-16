@@ -298,9 +298,16 @@ h1 .q{color:var(--ai)}
   touch-action:manipulation;
 }
 .btn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
-.btn.share{background:var(--ink);color:#fff}
+.btn.share{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between}
 .btn.retry{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
 .btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.share-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-row:has(>[hidden]){grid-template-columns:1fr}
+.btn.alt{
+  background:var(--bg);color:var(--ink);border:1.5px solid var(--line);
+  font-size:13.5px;font-weight:700;padding:12px 6px;
+}
 
 footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
 
@@ -430,7 +437,15 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="best" id="rBestNew" hidden>🎉 自己ベスト更新!</div>
     <div class="best-line" id="rBest"></div>
     <div class="best-line">タグ検索で他の挑戦者の読まれ度が見られます</div>
-    <button class="btn share" id="btnShare">結果をXでシェア</button>
+    <button class="btn share" id="btnShare"><span>結果を</span><span>Xでシェア</span></button>
+    <div class="share-row">
+      <button class="btn alt" id="btnThreads">Threadsでシェア</button>
+      <button class="btn alt" id="btnLine">LINEで送る</button>
+    </div>
+    <div class="share-row">
+      <button class="btn alt" id="btnNativeShare" hidden>シェア先を選ぶ</button>
+      <button class="btn alt" id="btnCopyLink">リンクをコピー</button>
+    </div>
     <button class="btn retry" id="btnRetry">もう一回挑む</button>
   </div>
 </div>
@@ -766,14 +781,49 @@ function finish(){
   var kind=you>ai?'win':you<ai?'lose':'draw';
   runFinishFx(kind,function(){$('overlay').classList.add('show');});
 
+  var shareText=shareTextFor(readPct,t[1],best);
+  function shareUrlFor(source){
+    var u=new URL(location.origin+location.pathname);
+    u.searchParams.set('utm_source',source);
+    u.searchParams.set('utm_medium','share');
+    u.searchParams.set('utm_content','play'+best.plays);
+    u.searchParams.set('utm_campaign','v3');
+    return u.toString();
+  }
+
   $('btnShare').onclick=function(){
-    var text=shareTextFor(readPct,t[1],best);
-    var url=new URL(location.origin+location.pathname);
-    url.searchParams.set('utm_source','x');
-    url.searchParams.set('utm_medium','share');
-    url.searchParams.set('utm_content','play'+best.plays);
-    url.searchParams.set('utm_campaign','v3');
-    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url.toString()),'_blank');
+    var u=shareUrlFor('x');
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText)+'&url='+encodeURIComponent(u),'_blank');
+  };
+  $('btnThreads').onclick=function(){
+    var u=shareUrlFor('threads');
+    window.open('https://www.threads.net/intent/post?text='+encodeURIComponent(shareText+'\n'+u),'_blank');
+  };
+  $('btnLine').onclick=function(){
+    var u=shareUrlFor('line');
+    window.open('https://line.me/R/msg/text/?'+encodeURIComponent(shareText+'\n'+u),'_blank');
+  };
+  var nativeBtn=$('btnNativeShare');
+  if(navigator.share){
+    nativeBtn.hidden=false;
+    nativeBtn.onclick=function(){
+      navigator.share({text:shareText,url:shareUrlFor('native')}).catch(function(){});
+    };
+  }else{
+    nativeBtn.hidden=true;
+  }
+  $('btnCopyLink').onclick=function(){
+    var btn=$('btnCopyLink');
+    var orig=btn.textContent;
+    function done(ok){
+      btn.textContent=ok?'✅ コピーしました':'コピー失敗…';
+      setTimeout(function(){btn.textContent=orig;},1600);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(shareUrlFor('copy')).then(function(){done(true);}).catch(function(){done(false);});
+    }else{
+      done(false);
+    }
   };
 }
 
