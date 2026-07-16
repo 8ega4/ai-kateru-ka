@@ -298,7 +298,7 @@ h1 .q{color:var(--ai)}
   touch-action:manipulation;
 }
 .btn:focus-visible{outline:3px solid var(--you);outline-offset:2px}
-.btn.share{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between}
+.btn.share{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn.retry{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.4;pointer-events:none}
@@ -307,7 +307,9 @@ h1 .q{color:var(--ai)}
 .btn.alt{
   background:var(--bg);color:var(--ink);border:1.5px solid var(--line);
   font-size:13.5px;font-weight:700;padding:12px 6px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
+.btn .icon{flex:0 0 auto;display:block}
 
 footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
 
@@ -437,10 +439,20 @@ footer{font-size:12px;color:var(--draw);text-align:center;line-height:1.6}
     <div class="best" id="rBestNew" hidden>🎉 自己ベスト更新!</div>
     <div class="best-line" id="rBest"></div>
     <div class="best-line">タグ検索で他の挑戦者の読まれ度が見られます</div>
-    <button class="btn share" id="btnShare"><span>結果を</span><span>Xでシェア</span></button>
+    <button class="btn share" id="btnShare">
+      <span>結果を</span>
+      <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M4 4L20 20M20 4L4 20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></span>
+      <span>でシェア</span>
+    </button>
     <div class="share-row">
-      <button class="btn alt" id="btnThreads">Threadsでシェア</button>
-      <button class="btn alt" id="btnLine">LINEで送る</button>
+      <button class="btn alt" id="btnThreads">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none"><path d="M12 3C7 3 4 6.5 4 12c0 5 3 9 8 9 3.5 0 6-1.6 6-4.4 0-2.2-1.7-3.6-4-3.6-2 0-3.3 1-3.3 2.4 0 1 .8 1.6 1.8 1.6.7 0 1.2-.3 1.5-.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        Threads
+      </button>
+      <button class="btn alt" id="btnLine">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9-.3 1.1-.3 2-.3 2.5 0 .3.2.5.5.5.2 0 .3-.1.5-.2.7-.5 3.4-2.3 4.7-3.3C19.7 17.1 22 14.3 22 11c0-4.4-4.5-8-10-8Z" fill="#06C755"/></svg></span>
+        LINEで送る
+      </button>
     </div>
     <div class="share-row">
       <button class="btn alt" id="btnNativeShare" hidden>シェア先を選ぶ</button>
