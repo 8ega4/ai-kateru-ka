@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://ai-kateru-ka.pages.dev/">
+<title>AIに勝てるか? — 移転しました</title>
+<script>
+(function () {
+  'use strict';
+
+  var destinationOrigin = 'https://ai-kateru-ka.pages.dev';
+  var repositoryPath = '/ai-kateru-ka';
+  var currentPath = window.location.pathname;
+  var destinationPath = '/';
+
+  if (currentPath === repositoryPath || currentPath === repositoryPath + '/') {
+    destinationPath = '/';
+  } else if (currentPath.indexOf(repositoryPath + '/') === 0) {
+    destinationPath = currentPath.slice(repositoryPath.length);
+  }
+
+  var destinationUrl =
+    destinationOrigin +
+    destinationPath +
+    window.location.search +
+    window.location.hash;
+
+  if (window.location.origin !== destinationOrigin) {
+    window.location.replace(destinationUrl);
+  }
+})();
+</script>
+<meta http-equiv="refresh" content="0; url=https://ai-kateru-ka.pages.dev/">
+<style>
+html { color-scheme: light; font-family: system-ui, sans-serif; }
+body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #eceff3; color: #14171f; }
+main { max-width: 36rem; padding: 2rem; text-align: center; }
+a { color: #1f3be0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>サイトは移転しました</h1>
+  <p>自動的に新しいサイトへ移動します。</p>
+  <p><a href="https://ai-kateru-ka.pages.dev/">移動しない場合はこちらを開いてください</a></p>
+</main>
+</body>
+</html>
