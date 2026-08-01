@@ -1290,8 +1290,15 @@
       border-radius: 50%;
     }
     .rps-core .eye {
+      --gaze-x: 0px;
+      --gaze-y: 0px;
       transform: scale(1.25);
       box-shadow: 0 0 0 5px rgba(31,59,224,.25), 0 0 32px rgba(92,111,255,.7);
+    }
+    .rps-core .eye::before,
+    .rps-core .eye::after {
+      transform: translate3d(var(--gaze-x, 0px), var(--gaze-y, 0px), 0);
+      will-change: transform;
     }
     .rps-hand {
       position: absolute;
@@ -2599,6 +2606,76 @@
         }, .12);
       animations.push(howTimeline);
 
+      const gazeEye = document.querySelector(".rps-core .eye");
+      const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      let gazeFrame = 0;
+      let gazePointerX = 0;
+      let gazePointerY = 0;
+      let hasGazePointer = false;
+      let gazeXTo;
+      let gazeYTo;
+
+      const resetGaze = () => {
+        hasGazePointer = false;
+        gazeXTo?.(0);
+        gazeYTo?.(0);
+      };
+      const updateGaze = () => {
+        gazeFrame = 0;
+        if (!gazeEye || !hasGazePointer) return;
+
+        const rect = gazeEye.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+          resetGaze();
+          return;
+        }
+
+        const deltaX = gazePointerX - (rect.left + rect.width / 2);
+        const deltaY = gazePointerY - (rect.top + rect.height / 2);
+        const angle = Math.atan2(deltaY, deltaX);
+        const intensity = Math.min(Math.hypot(deltaX, deltaY) / 220, 1);
+        gazeXTo(Math.cos(angle) * 12 * intensity);
+        gazeYTo(Math.sin(angle) * 7 * intensity);
+      };
+      const scheduleGazeUpdate = () => {
+        if (!hasGazePointer || gazeFrame) return;
+        gazeFrame = window.requestAnimationFrame(updateGaze);
+      };
+      const handleGazePointerMove = (event) => {
+        if (!event.isPrimary) return;
+        gazePointerX = event.clientX;
+        gazePointerY = event.clientY;
+        hasGazePointer = true;
+        scheduleGazeUpdate();
+      };
+      const handleGazePointerLeave = () => resetGaze();
+
+      if (gazeEye && finePointer) {
+        gazeXTo = gsap.quickTo(gazeEye, "--gaze-x", {
+          duration: .24,
+          ease: "power2.out"
+        });
+        gazeYTo = gsap.quickTo(gazeEye, "--gaze-y", {
+          duration: .24,
+          ease: "power2.out"
+        });
+        window.addEventListener("pointermove", handleGazePointerMove, { passive: true });
+        window.addEventListener("scroll", scheduleGazeUpdate, { passive: true });
+        window.addEventListener("resize", scheduleGazeUpdate, { passive: true });
+        window.addEventListener("blur", handleGazePointerLeave);
+        document.documentElement.addEventListener("pointerleave", handleGazePointerLeave);
+      }
+
+      const cleanupGazeTracking = () => {
+        if (gazeFrame) window.cancelAnimationFrame(gazeFrame);
+        window.removeEventListener("pointermove", handleGazePointerMove);
+        window.removeEventListener("scroll", scheduleGazeUpdate);
+        window.removeEventListener("resize", scheduleGazeUpdate);
+        window.removeEventListener("blur", handleGazePointerLeave);
+        document.documentElement.removeEventListener("pointerleave", handleGazePointerLeave);
+        if (gazeEye) gsap.killTweensOf(gazeEye, "--gaze-x,--gaze-y");
+      };
+
       const orbitTween = gsap.to(".orbit", {
         rotation: 360,
         duration: 26,
@@ -2794,6 +2871,7 @@
         if (event.persisted) return;
         skipButton?.removeEventListener("click", skipOpening);
         window.removeEventListener("keydown", handleOpeningKeydown);
+        cleanupGazeTracking();
         animations.forEach((animation) => animation?.kill?.());
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }, { once: true });
