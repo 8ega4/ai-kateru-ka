@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" role="img" aria-label="あなたの手は未選択">
+  <path d="m28 8 56 0 20 20v56l-20 20H28L8 84V28z" fill="#fff3eb" stroke="#ff6b1a" stroke-width="4"/>
+  <circle cx="56" cy="56" r="39" fill="none" stroke="#ffab78" stroke-width="2" stroke-dasharray="5 5"/>
+  <path d="M39 44c1-12 9-19 21-19 13 0 22 8 22 20 0 9-5 14-13 19-7 4-10 8-10 15H47c0-12 5-18 14-24 6-4 9-7 9-11 0-5-4-9-10-9-6 0-10 4-10 11zM47 86h13v13H47z" fill="#ff6b1a"/>
+</svg>

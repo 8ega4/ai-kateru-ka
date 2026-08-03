@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78 30" role="img" aria-label="YOU">
+  <path d="M2 2h74v26H2z" fill="#14171f"/>
+  <path d="M2 2h8M2 2v8M76 28h-8M76 28v-8" fill="none" stroke="#ff6b1a" stroke-width="2"/>
+  <path d="m10 7 7 8 7-8M17 15v8M31 7h12v16H31zM51 7v11c0 3.3 2.2 5 6 5s6-1.7 6-5V7" fill="none" stroke="#ff9253" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
