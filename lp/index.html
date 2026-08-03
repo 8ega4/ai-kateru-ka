@@ -712,11 +712,6 @@
       position: relative;
       width: 438px;
       margin-left: auto;
-      padding: 18px;
-      border: 2px solid var(--ink);
-      border-radius: 28px;
-      background: #f8f9fb;
-      box-shadow: 18px 18px 0 var(--blue), var(--shadow);
       transform: rotate(1.5deg);
     }
 
@@ -733,62 +728,157 @@
       font-size: 11px;
       letter-spacing: .14em;
       transform: rotate(3deg);
+      z-index: 5;
+    }
+
+    .mock-console {
+      position: relative;
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      overflow: hidden;
+      border: 2px solid #080b10;
+      background:
+        linear-gradient(90deg, var(--blue) 0 7px, transparent 7px calc(100% - 7px), var(--orange) calc(100% - 7px)),
+        linear-gradient(145deg, #1a1f29, #10131a 46%, #0c0f15);
+      clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+      filter:
+        drop-shadow(16px 16px 0 rgba(31, 59, 224, .96))
+        drop-shadow(-4px 5px 0 rgba(255, 107, 26, .72))
+        drop-shadow(0 22px 30px rgba(20, 23, 31, .18));
+      isolation: isolate;
+    }
+
+    .mock-console::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      z-index: -1;
+      border: 1px solid rgba(255, 255, 255, .17);
+      clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+      pointer-events: none;
     }
 
     .browser-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 30px;
-      margin-bottom: 14px;
-      color: var(--muted);
+      height: 31px;
+      padding: 0 8px 0 10px;
+      color: #c4cad4;
       font-family: var(--display);
-      font-size: 10px;
-      letter-spacing: .08em;
+      font-size: 9px;
+      letter-spacing: .1em;
     }
 
-    .browser-dots { display: flex; gap: 6px; }
-    .browser-dots i {
-      width: 7px;
-      height: 7px;
-      display: block;
-      border-radius: 50%;
-      background: var(--line);
+    .mock-brandline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
     }
-    .browser-dots i:first-child { background: var(--orange); }
-    .browser-dots i:last-child { background: var(--blue); }
+
+    .mock-brand-eye {
+      width: 23px;
+      height: 23px;
+      position: relative;
+      display: inline-block;
+      flex: 0 0 auto;
+      border: 1.5px solid #fff;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 3px 3px 0 var(--blue);
+    }
+
+    .mock-brand-eye::before,
+    .mock-brand-eye::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .mock-brand-eye::before { width: 11px; height: 11px; background: #4764ff; }
+    .mock-brand-eye::after { width: 4px; height: 4px; background: #10131a; }
+
+    .mock-sound {
+      padding: 5px 7px;
+      border: 1px solid #343b48;
+      color: #8f98a6;
+      background: #10131a;
+      clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+      white-space: nowrap;
+    }
 
     .score-card {
+      position: relative;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      padding: 13px 18px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--paper);
+      min-height: 69px;
+      padding: 9px 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .14);
+      color: #fff;
+      background: rgba(6, 8, 12, .68);
+      clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+    }
+
+    .score-card::before,
+    .score-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 35%;
+      opacity: .22;
+      background-size: 6px 6px;
+      pointer-events: none;
+    }
+
+    .score-card::before {
+      left: 0;
+      background-image: radial-gradient(circle, #4764ff 1.1px, transparent 1.35px);
+      -webkit-mask-image: linear-gradient(90deg, #000, transparent);
+      mask-image: linear-gradient(90deg, #000, transparent);
+    }
+
+    .score-card::after {
+      right: 0;
+      background-image: radial-gradient(circle, var(--orange) 1.1px, transparent 1.35px);
+      -webkit-mask-image: linear-gradient(270deg, #000, transparent);
+      mask-image: linear-gradient(270deg, #000, transparent);
     }
 
     .score-side {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       font-family: var(--display);
     }
     .score-side:last-child { align-items: flex-end; }
-    .score-side small { font-size: 11px; letter-spacing: .12em; }
-    .score-side strong { font-size: 32px; font-weight: 400; line-height: 1.1; }
-    .score-side.ai { color: var(--blue); }
+    .score-side small { font-size: 10px; letter-spacing: .16em; }
+    .score-side strong { font-size: 34px; font-weight: 400; line-height: 1; text-shadow: 0 0 13px currentColor; }
+    .score-side.ai { color: #4764ff; }
     .score-side.you { color: var(--orange); }
     .draw-score {
-      color: var(--muted);
+      position: relative;
+      z-index: 1;
+      color: #c4cad4;
       font-family: var(--display);
-      font-size: 10px;
+      font-size: 9px;
       text-align: center;
+      letter-spacing: .1em;
     }
     .draw-score strong {
       display: block;
-      color: var(--ink);
-      font-size: 16px;
+      color: #fff;
+      font-size: 19px;
       font-weight: 400;
+      letter-spacing: 0;
     }
 
     .round-line {
@@ -796,60 +886,124 @@
       align-items: baseline;
       justify-content: center;
       gap: 5px;
-      margin: 15px 0 8px;
+      margin: 5px 0 2px;
+      color: #fff;
       font-family: var(--display);
     }
     .round-line span:first-child {
-      color: var(--muted);
+      color: #c4cad4;
       font-size: 10px;
       letter-spacing: .12em;
     }
-    .round-line strong { font-size: 22px; font-weight: 400; }
+    .round-line strong { font-size: 25px; font-weight: 400; }
     .round-line em {
-      color: var(--muted);
+      color: #fff;
       font-size: 12px;
       font-style: normal;
     }
     .round-line b {
       margin-left: 7px;
       padding: 3px 9px;
-      border: 1px solid var(--line);
+      border: 1px solid #fff;
       border-radius: 999px;
-      color: var(--muted);
-      background: var(--paper);
+      color: var(--ink);
+      background: #fff;
+      font-family: var(--body);
       font-size: 10px;
-      font-weight: 400;
+      font-weight: 700;
     }
 
     .progress {
       display: grid;
       grid-template-columns: repeat(20, 1fr);
       gap: 2px;
-      margin-bottom: 13px;
+      margin: 0 7px 1px;
     }
     .progress i {
       height: 7px;
       border-radius: 2px;
-      background: var(--line);
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: #555d68;
     }
-    .progress i:nth-child(-n+11) { background: var(--blue); }
-    .progress i:nth-child(11) { outline: 2px solid var(--paper); box-shadow: 0 0 0 3px var(--blue); }
+    .progress i:nth-child(-n+11) { background: #4764ff; }
+    .progress i:nth-child(11) { outline: 2px solid #10131a; box-shadow: 0 0 0 3px #4764ff; }
 
     .arena {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 18px 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
+      min-height: 306px;
+      padding: 16px 16px 13px;
+      overflow: hidden;
+      border: 2px solid #bbc2ce;
       background:
-        linear-gradient(90deg, rgba(31,59,224,.07), transparent 42%, transparent 58%, rgba(255,107,26,.07)),
-        var(--paper);
+        radial-gradient(circle at 5% 48%, rgba(31, 59, 224, .11), transparent 36%),
+        radial-gradient(circle at 95% 48%, rgba(255, 107, 26, .1), transparent 36%),
+        #fff;
+      clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
+    }
+
+    .arena::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: .28;
+      background-image:
+        radial-gradient(circle, var(--blue) 1px, transparent 1.35px),
+        radial-gradient(circle, var(--orange) 1px, transparent 1.35px);
+      background-position: left center, right center;
+      background-size: 7px 7px;
+      background-repeat: repeat-y;
+      -webkit-mask-image: linear-gradient(90deg, #000, transparent 24%, transparent 76%, #000);
+      mask-image: linear-gradient(90deg, #000, transparent 24%, transparent 76%, #000);
+      pointer-events: none;
+    }
+
+    .arena::after {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      top: 58px;
+      z-index: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue) 22%, #aab7ff 50%, var(--orange) 78%, transparent);
+      box-shadow: 0 0 8px rgba(31, 59, 224, .7);
+      animation: mock-scan 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .arena > * { position: relative; z-index: 1; }
+
+    @keyframes mock-scan {
+      0%, 100% { opacity: .25; transform: scaleX(.78); }
+      50% { opacity: .9; transform: scaleX(1); }
+    }
+
+    .mock-eye-orbit {
+      width: 102px;
+      height: 64px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(31, 59, 224, .3);
+      border-radius: 50%;
+    }
+
+    .mock-eye-orbit::before {
+      content: "";
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border: 1px solid rgba(31, 59, 224, .18);
+      border-radius: 50%;
     }
 
     .eye {
-      width: 78px;
-      height: 46px;
+      width: 76px;
+      height: 45px;
       position: relative;
       overflow: hidden;
       border: 2px solid var(--ink);
@@ -886,41 +1040,70 @@
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      margin: 10px 0 4px;
+      margin: 7px 0 2px;
       text-align: center;
     }
-    .hand-emoji { font-size: 57px; line-height: 1.1; }
-    .hand-meta {
-      font-family: var(--display);
-      font-size: 10px;
-      letter-spacing: .14em;
+
+    .mock-player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
     }
-    .hand-meta.ai { color: var(--blue); }
-    .hand-meta.you { color: var(--orange); }
+
+    .mock-avatar {
+      width: 34px;
+      height: 34px;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 5px rgba(20, 23, 31, .18));
+    }
+
+    .mock-hand-image {
+      width: 68px;
+      height: 68px;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 5px 5px rgba(20, 23, 31, .16));
+    }
+
+    .mock-hand-label {
+      width: 38px;
+      height: 20px;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 4px rgba(20, 23, 31, .12));
+    }
+
     .versus {
-      color: var(--muted);
+      color: var(--ink);
       font-family: var(--display);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .verdict {
-      color: var(--orange);
+      min-height: 27px;
+      display: flex;
+      align-items: center;
+      color: var(--blue);
       font-family: var(--display);
-      font-size: 25px;
+      font-size: 22px;
       letter-spacing: .08em;
     }
 
     .ai-quote {
-      margin-top: 5px;
+      min-height: 28px;
+      margin-top: 1px;
       color: var(--blue);
-      font-size: 12px;
+      font-size: 10.5px;
       font-weight: 700;
+      line-height: 1.45;
       text-align: center;
     }
 
     .mind-meter {
-      width: 270px;
-      margin-top: 13px;
+      width: min(280px, 100%);
+      margin-top: 5px;
     }
 
     .mind-meter-label {
@@ -929,12 +1112,12 @@
       margin-bottom: 5px;
       color: var(--muted);
       font-family: var(--display);
-      font-size: 9px;
+      font-size: 8px;
       letter-spacing: .08em;
     }
     .mind-meter-label b { color: var(--blue); font-weight: 400; }
     .mind-meter-track {
-      height: 10px;
+      height: 8px;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -950,24 +1133,36 @@
     .hand-buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
+      gap: 7px;
     }
     .hand-button {
-      padding: 9px 0 7px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper);
+      min-height: 71px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 0 4px;
+      border: 1.5px solid #080b10;
+      background: #fff;
+      box-shadow: inset 0 -4px 0 var(--blue);
+      clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
       text-align: center;
     }
-    .hand-button span {
+
+    .hand-button:last-child { box-shadow: inset 0 -4px 0 var(--orange); }
+
+    .hand-button img {
       display: block;
-      font-size: 27px;
-      line-height: 1.05;
+      width: 43px;
+      height: 43px;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 3px rgba(20, 23, 31, .13));
     }
     .hand-button b {
-      color: var(--muted);
+      color: var(--ink);
+      font-family: var(--display);
       font-size: 10px;
+      letter-spacing: .06em;
     }
 
     .tension {
@@ -1516,13 +1711,26 @@
       background: #06c755;
       border-color: #06c755;
     }
-    .share-action[data-share="facebook"] {
-      background: #1877f2;
-      border-color: #1877f2;
+    .share-action[data-share="threads"] {
+      background: #fff;
+      border-color: #fff;
+      color: #080a0f;
     }
-    .share-action[data-share="native"],
+    .share-action[data-share="threads"] svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.9;
+    }
+    .share-action[data-share="native"] {
+      background: var(--blue);
+      border-color: var(--blue-deep);
+    }
     .share-action[data-share="copy"] {
-      background: rgba(255,255,255,.08);
+      background: #e9ecf2;
+      border-color: #c7ceda;
+      color: var(--ink);
     }
     .share-status {
       grid-column: 1 / -1;
@@ -1781,7 +1989,45 @@
       .hero-lead { width: auto; font-size: 16px; }
       .hero-actions { align-items: flex-start; flex-direction: column; }
       .trust-row { flex-wrap: wrap; }
-      .game-shell { width: min(332px, calc(100% - 12px)); margin: 0 auto; padding: 13px; box-shadow: 12px 12px 0 var(--blue); }
+      .game-shell { width: min(332px, calc(100% - 12px)); margin: 0 auto; }
+      .mock-console {
+        gap: 5px;
+        padding: 8px;
+        filter:
+          drop-shadow(10px 11px 0 rgba(31, 59, 224, .96))
+          drop-shadow(-3px 4px 0 rgba(255, 107, 26, .7))
+          drop-shadow(0 18px 24px rgba(20, 23, 31, .16));
+      }
+      .browser-bar { height: 27px; padding-inline: 7px 5px; font-size: 7.5px; }
+      .mock-brand-eye { width: 20px; height: 20px; }
+      .mock-brand-eye::before { width: 10px; height: 10px; }
+      .mock-sound { padding: 4px 5px; }
+      .score-card { min-height: 58px; padding: 7px 16px; }
+      .score-side small { font-size: 8px; }
+      .score-side strong { font-size: 28px; }
+      .draw-score { font-size: 7px; }
+      .draw-score strong { font-size: 16px; }
+      .round-line { margin-block: 3px 1px; }
+      .round-line strong { font-size: 21px; }
+      .round-line b { padding: 2px 7px; font-size: 8px; }
+      .progress { margin-inline: 5px; }
+      .progress i { height: 6px; }
+      .arena { min-height: 266px; padding: 12px 9px 10px; }
+      .arena::after { top: 49px; }
+      .mock-eye-orbit { width: 88px; height: 56px; }
+      .eye { width: 67px; height: 40px; }
+      .eye::before { width: 24px; height: 24px; left: 22px; top: 7px; }
+      .eye::after { width: 9px; height: 9px; left: 30px; top: 15px; }
+      .hands { margin-top: 5px; }
+      .mock-avatar { width: 28px; height: 28px; }
+      .mock-hand-image { width: 56px; height: 56px; }
+      .mock-hand-label { width: 33px; height: 18px; }
+      .verdict { min-height: 22px; font-size: 18px; }
+      .ai-quote { min-height: 25px; font-size: 9px; }
+      .mind-meter { margin-top: 2px; }
+      .hand-button { min-height: 61px; }
+      .hand-button img { width: 36px; height: 36px; }
+      .hand-button b { font-size: 8px; }
       .tension-inner { height: auto; grid-template-columns: 1fr; padding: 30px 0; text-align: center; gap: 22px; }
       .tension-copy { padding: 20px 0; border: 0; border-top: 1px solid rgba(255,255,255,.2); border-bottom: 1px solid rgba(255,255,255,.2); font-size: 18px; }
       .section { padding: 80px 0; }
@@ -1833,7 +2079,6 @@
       .button.small { padding: 0 10px; }
       .hero h1 { font-size: clamp(38px, 11.5vw, 45px); }
       .hero-lead { font-size: 15px; }
-      .hand-emoji { font-size: 50px; }
       .mind-meter { width: min(270px, 100%); }
       .result-section .section-title { font-size: clamp(30px, 9.4vw, 34px); }
       .share-panel { padding: 22px 18px; }
@@ -1946,40 +2191,50 @@
         </div>
 
         <div class="game-shell">
-          <div class="browser-bar">
-            <div class="browser-dots"><i></i><i></i><i></i></div>
-            <span>AI-KATERU-KA / BATTLE</span>
-          </div>
-          <div class="score-card">
-            <div class="score-side ai"><small>AI</small><strong>4</strong></div>
-            <div class="draw-score">DRAW<strong>2</strong></div>
-            <div class="score-side you"><small>YOU</small><strong>5</strong></div>
-          </div>
-          <div class="round-line">
-            <span>ROUND</span><strong>12</strong><em>/ 20</em><b>あと9戦</b>
-          </div>
-          <div class="progress">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-          <div class="arena">
-            <div class="eye"></div>
-            <div class="hands">
-              <div><div class="hand-emoji">✌️</div><div class="hand-meta ai">AI</div></div>
-              <div class="versus">VS</div>
-              <div><div class="hand-emoji">🖐</div><div class="hand-meta you">YOU</div></div>
+          <div class="mock-console">
+            <div class="browser-bar">
+              <span class="mock-brandline"><i class="mock-brand-eye" aria-hidden="true"></i>AIに勝てるか?</span>
+              <span class="mock-sound">SOUND OFF</span>
             </div>
-            <div class="verdict">LOSE…</div>
-            <div class="ai-quote">AI「パーを出すと読んでいました」</div>
-            <div class="mind-meter">
-              <div class="mind-meter-label"><span>AIの読心レベル</span><b>64%</b></div>
-              <div class="mind-meter-track"><div class="mind-meter-fill"></div></div>
+            <div class="score-card">
+              <div class="score-side ai"><small>AI</small><strong>4</strong></div>
+              <div class="draw-score">DRAW<strong>2</strong></div>
+              <div class="score-side you"><small>YOU</small><strong>5</strong></div>
             </div>
-          </div>
-          <div class="hand-buttons">
-            <div class="hand-button"><span>✊</span><b>グー</b></div>
-            <div class="hand-button"><span>✌️</span><b>チョキ</b></div>
-            <div class="hand-button"><span>🖐</span><b>パー</b></div>
+            <div class="round-line">
+              <span>ROUND</span><strong>12</strong><em>/ 20</em><b>あと9戦</b>
+            </div>
+            <div class="progress">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="arena">
+              <div class="mock-eye-orbit"><div class="eye"></div></div>
+              <div class="hands">
+                <div class="mock-player">
+                  <img class="mock-avatar" src="../images/game/avatar-ai.png" width="512" height="512" alt="">
+                  <img class="mock-hand-image" src="../images/game/hand-ai-scissors.png" width="512" height="512" alt="AIの手はチョキ">
+                  <img class="mock-hand-label" src="../images/game/label-ai.svg" alt="AI">
+                </div>
+                <div class="versus">VS</div>
+                <div class="mock-player">
+                  <img class="mock-avatar" src="../images/game/avatar-you.png" width="512" height="512" alt="">
+                  <img class="mock-hand-image" src="../images/game/hand-you-paper.png" width="512" height="512" alt="あなたの手はパー">
+                  <img class="mock-hand-label" src="../images/game/label-you.svg" alt="YOU">
+                </div>
+              </div>
+              <div class="verdict">LOSE…</div>
+              <div class="ai-quote">AI「パーを出すと<br>読んでいました」</div>
+              <div class="mind-meter">
+                <div class="mind-meter-label"><span>AIの読心レベル</span><b>64%</b></div>
+                <div class="mind-meter-track"><div class="mind-meter-fill"></div></div>
+              </div>
+            </div>
+            <div class="hand-buttons">
+              <div class="hand-button"><img src="../images/game/hand-you-rock.png" width="512" height="512" alt=""><b>グー</b></div>
+              <div class="hand-button"><img src="../images/game/hand-you-scissors.png" width="512" height="512" alt=""><b>チョキ</b></div>
+              <div class="hand-button"><img src="../images/game/hand-you-paper.png" width="512" height="512" alt=""><b>パー</b></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2116,25 +2371,25 @@
             <p>この挑戦をシェアして、次の予測不能人間を呼ぼう。</p>
           </div>
           <div class="share-actions">
-            <a class="share-action" href="#" data-share="x" target="_blank" rel="noopener noreferrer" aria-label="XでこのLPをシェア">
+            <a class="share-action" href="#" data-share="x" target="_blank" rel="noopener noreferrer" aria-label="結果をXでシェア">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.51 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z"/></svg>
-              Xでシェア
+              結果をXでシェア
+            </a>
+            <a class="share-action" href="#" data-share="threads" target="_blank" rel="noopener noreferrer" aria-label="ThreadsでこのLPをシェア">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.8 11.2c-.2-4-2.1-6.2-5.5-6.2-3.7 0-6.1 2.8-6.1 7s2.4 7 6.2 7c3.5 0 5.8-1.9 5.8-4.4 0-2.1-1.8-3.6-4.4-3.6-2.8 0-4.6 1.4-4.6 3.4 0 1.6 1.3 2.7 3.2 2.7 2.8 0 5-2.4 5.4-5.9Z"/><path d="M14.5 9.1c1.5.4 3.2 1.2 4.3 2.4"/></svg>
+              Threadsでシェア
             </a>
             <a class="share-action" href="#" data-share="line" target="_blank" rel="noopener noreferrer" aria-label="LINEでこのLPを送る">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.7 10.2c0-4.1-4-7.4-8.8-7.4S3.1 6.1 3.1 10.2c0 3.7 3.3 6.8 7.7 7.3.3.1.7.2.8.5.1.3.1.7 0 1l-.3 1.7c-.1.5-.4 1.9 1.7 1 2.1-.9 5.7-3.4 7.8-5.9 1.4-1.5 2.2-3 2.2-4.6ZM8.5 12.5H6.7V8h.9v3.6h.9v.9Zm1.8 0h-.9V8h.9v4.5Zm4.1 0h-.9l-1.7-2.7v2.7h-.9V8h.9l1.7 2.7V8h.9v4.5Zm3.3-3.6h-1.8v.8h1.7v.9h-1.7v1h1.8v.9H15V8h2.7v.9Z"/></svg>
               LINEで送る
             </a>
-            <a class="share-action" href="#" data-share="facebook" target="_blank" rel="noopener noreferrer" aria-label="FacebookでこのLPをシェア">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 22v-9h3l.5-3.5h-3.5V7.3c0-1 .3-1.7 1.8-1.7h1.9V2.5c-.3 0-1.5-.1-2.8-.1-2.8 0-4.7 1.7-4.7 4.8v2.3H6.7V13h3.1v9h3.8Z"/></svg>
-              Facebook
-            </a>
             <button class="share-action" type="button" data-share="native" aria-label="端末の共有メニューを開く">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.1c.1-.3.1-.6.1-.8s0-.5-.1-.8L16 7.1c.5.5 1.2.8 2 .8 1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3c0 .3 0 .5.1.8L8 9.8C7.5 9.3 6.8 9 6 9c-1.7 0-3 1.3-3 3s1.3 3 3 3c.8 0 1.5-.3 2-.8l7.1 4.2c-.1.2-.1.5-.1.7 0 1.6 1.3 2.9 3 2.9s3-1.3 3-3-1.3-2.9-3-2.9Z"/></svg>
-              共有メニュー
+              シェア先を選ぶ
             </button>
             <button class="share-action" type="button" data-share="copy" aria-label="このLPのURLをコピー">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a1 1 0 0 0 1.4 0l3.5-3.5a3 3 0 0 0-4.2-4.2L9.2 7.8A1 1 0 1 0 10.6 9.2l2.1-2.1a1 1 0 0 1 1.4 1.4L10.6 12a1 1 0 0 0 0 1.4Zm2.8-2.8a1 1 0 0 0-1.4 0l-3.5 3.5a3 3 0 0 0 4.2 4.2l2.1-2.1a1 1 0 1 0-1.4-1.4l-2.1 2.1a1 1 0 0 1-1.4-1.4l3.5-3.5a1 1 0 0 0 0-1.4Z"/></svg>
-              <span data-copy-label>URLをコピー</span>
+              <span data-copy-label>リンクをコピー</span>
             </button>
             <p class="share-status" data-share-status role="status" aria-live="polite"></p>
           </div>
@@ -2238,7 +2493,7 @@
         if (label) {
           label.textContent = "コピーしました";
           window.setTimeout(() => {
-            label.textContent = "URLをコピー";
+            label.textContent = "リンクをコピー";
           }, 1800);
         }
         setShareStatus("公開URLをコピーしました");
@@ -2247,8 +2502,8 @@
         const url = getShareUrl();
         const destinations = {
           x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
+          threads: `https://www.threads.com/intent/post?text=${encodeURIComponent(`${shareText}\n${url}`)}`,
           line: `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`,
-          facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
         };
         Object.entries(destinations).forEach(([platform, href]) => {
           document.querySelectorAll(`a[data-share="${platform}"]`).forEach((link) => {
